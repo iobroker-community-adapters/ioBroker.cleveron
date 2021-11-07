@@ -1,0 +1,98 @@
+{
+  "common": {
+    "name": "cleveron",
+    "version": "0.0.1",
+    "news": {
+      "0.0.1": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "zh-cn": "首次出版"
+      }
+    },
+    "title": "CLEVERON",
+    "titleLang": {
+      "en": "CLEVERON",
+      "de": "CLEVERON",
+      "ru": "КЛЕВЕРОН",
+      "pt": "CLEVERON",
+      "nl": "CLEVERON",
+      "fr": "CLEVERON",
+      "it": "CLEVERON",
+      "es": "CLEVERON",
+      "pl": "CLEVERON",
+      "zh-cn": "克莱弗龙"
+    },
+    "desc": {
+      "en": "Erhalte deine Daten aus der CLEVERON - API",
+      "de": "Erhalte deine Daten aus der CLEVERON - API",
+      "ru": "Erhalte deine Daten aus der CLEVERON - API",
+      "pt": "Erhalte deine Daten aus der CLEVERON - API",
+      "nl": "Erhalte deine Daten aus der CLEVERON - API",
+      "fr": "Erhalte deine Daten aus der CLEVERON - API",
+      "it": "Erhalte deine Daten aus der CLEVERON - API",
+      "es": "Erhalte deine Daten aus der CLEVERON - API",
+      "pl": "Erhalte deine Daten aus der CLEVERON - API",
+      "zh-cn": "Erhalte deine Daten aus der CLEVERON - API"
+    },
+    "authors": [
+      "forelleblau <marceladam@gmx.ch>"
+    ],
+    "keywords": [
+      "Cleveron",
+      "Heizung",
+      "CO2",
+      "Luftqualitaet"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "main": "main.js",
+    "icon": "cleveron.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/forelleblau/ioBroker.cleveron/main/admin/cleveron.png",
+    "readme": "https://github.com/forelleblau/ioBroker.cleveron/blob/main/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "climate-control",
+    "compact": true,
+    "connectionType": "cloud",
+    "dataSource": "poll",
+    "materialize": true,
+    "dependencies": [{
+      "js-controller": ">=2.0.0"
+    }]
+  },
+  "native": {
+    "user": "user",
+    "userpw": "password"
+  },
+  "objects": [],
+  "instanceObjects": [{
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
+}
