@@ -70,7 +70,8 @@
   },
   "native": {
     "user": "user",
-    "userpw": "password"
+    "userpw": "password",
+    "poll": 300000
   },
   "objects": [],
   "instanceObjects": [{

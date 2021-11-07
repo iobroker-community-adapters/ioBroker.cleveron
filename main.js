@@ -1,170 +1,502 @@
-'use strict';
-
-/*
- * Created with @iobroker/create-adapter v2.0.1
+/**
+ * cleveron adapter
  */
 
-// The adapter-core module gives you access to the core ioBroker functions
-// you need to create an adapter
-const utils = require('@iobroker/adapter-core');
+/* jshint -W097 */ // jshint strict:false
+/*jslint node: true */
+'use strict';
 
-// Load your modules here, e.g.:
-// const fs = require("fs");
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
+const request = require('request');
 
-class Cleveron extends utils.Adapter {
+const server = "https://server.cleveron.ch";
+const apipath = "/apiv1/";
+const buildingpath = "building?sessionToken=";
+const roompath = "/room?sessionToken=";
+const devicepath = "/devices?sessionToken=";
 
-	/**
-	 * @param {Partial<utils.AdapterOptions>} [options={}]
-	 */
-	constructor(options) {
-		super({
-			...options,
-			name: 'cleveron',
-		});
-		this.on('ready', this.onReady.bind(this));
-		this.on('stateChange', this.onStateChange.bind(this));
-		// this.on('objectChange', this.onObjectChange.bind(this));
-		// this.on('message', this.onMessage.bind(this));
-		this.on('unload', this.onUnload.bind(this));
-	}
 
-	/**
-	 * Is called when databases are connected and adapter received configuration.
-	 */
-	async onReady() {
-		// Initialize your adapter here
+var sessiontoken;
+var buildingid = [];
+var building = "";
+var room = "";
+var roomid = [];
+var devices = new Array();
+var rooms = new Array();
+var buildings = new Array();
+var dataarray = new Array();
 
-		// Reset the connection indicator during startup
-		this.setState('info.connection', false, true);
+let polling;
+var firstrun;
+var testend;
 
-		// The adapters config (in the instance object everything under the attribute "native") is accessible via
-		// this.config:
-		this.log.info('config option1: ' + this.config.option1);
-		this.log.info('config option2: ' + this.config.option2);
 
-		/*
-		For every state in the system there has to be also an object of type state
-		Here a simple template for a boolean variable named "testVariable"
-		Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-		*/
-		await this.setObjectNotExistsAsync('testVariable', {
-			type: 'state',
-			common: {
-				name: 'testVariable',
-				type: 'boolean',
-				role: 'indicator',
-				read: true,
-				write: true,
-			},
-			native: {},
-		});
 
-		// In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
-		this.subscribeStates('testVariable');
-		// You can also add a subscription for multiple states. The following line watches all states starting with "lights."
-		// this.subscribeStates('lights.*');
-		// Or, if you really must, you can also watch all states. Don't do this if you don't need to. Otherwise this will cause a lot of unnecessary load on the system:
-		// this.subscribeStates('*');
 
-		/*
-			setState examples
-			you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-		*/
-		// the variable testVariable is set to true as command (ack=false)
-		await this.setStateAsync('testVariable', true);
 
-		// same thing, but the value is flagged "ack"
-		// ack should be always set to true if the value is received from or acknowledged from the target system
-		await this.setStateAsync('testVariable', { val: true, ack: true });
+function startAdapter(options) {
+  options = options || {};
+  Object.assign(options, {
+    name: 'smappee'
+  });
 
-		// same thing, but the state is deleted after 30s (getState will return null afterwards)
-		await this.setStateAsync('testVariable', { val: true, ack: true, expire: 30 });
+  adapter = new utils.Adapter(options);
 
-		// examples for the checkPassword/checkGroup functions
-		let result = await this.checkPasswordAsync('admin', 'iobroker');
-		this.log.info('check user admin pw iobroker: ' + result);
+  // when adapter shuts down
+  adapter.on('unload', function(callback) {
+    try {
+      adapter.log.info('[END] Stopping smappee adapter...');
+      clearTimeout(polling);
+      adapter.setState('info.connection', false, true);
+      client.end();
+      callback();
+    } catch (e) {
+      adapter.log && adapter.log.warn("[END 7 catch] adapter stopped ")
+      callback();
+    }
+  });
 
-		result = await this.checkGroupAsync('admin', 'admin');
-		this.log.info('check group user admin group admin: ' + result);
-	}
+  // is called if a subscribed object changes
+  adapter.on('objectChange', function(id, obj) {
+    // Warning, obj can be null if it was deleted
+    adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
+  });
 
-	/**
-	 * Is called when adapter shuts down - callback has to be called under any circumstances!
-	 * @param {() => void} callback
-	 */
-	onUnload(callback) {
-		try {
-			// Here you must clear all timeouts or intervals that may still be active
-			// clearTimeout(timeout1);
-			// clearTimeout(timeout2);
-			// ...
-			// clearInterval(interval1);
+  // is called if a subscribed state changes
+  adapter.on('stateChange', function(id, state) {
+    // Warning, state can be null if it was deleted
 
-			callback();
-		} catch (e) {
-			callback();
-		}
-	}
+    try {
+      adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
 
-	// If you need to react to object changes, uncomment the following block and the corresponding line in the constructor.
-	// You also need to subscribe to the objects with `this.subscribeObjects`, similar to `this.subscribeStates`.
-	// /**
-	//  * Is called if a subscribed object changes
-	//  * @param {string} id
-	//  * @param {ioBroker.Object | null | undefined} obj
-	//  */
-	// onObjectChange(id, obj) {
-	// 	if (obj) {
-	// 		// The object was changed
-	// 		this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-	// 	} else {
-	// 		// The object was deleted
-	// 		this.log.info(`object ${id} deleted`);
-	// 	}
-	// }
 
-	/**
-	 * Is called if a subscribed state changes
-	 * @param {string} id
-	 * @param {ioBroker.State | null | undefined} state
-	 */
-	onStateChange(id, state) {
-		if (state) {
-			// The state was changed
-			this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-		} else {
-			// The state was deleted
-			this.log.info(`state ${id} deleted`);
-		}
-	}
+      if (!id || state.ack) return; // Ignore acknowledged state changes or error states
+      id = id.substring(adapter.namespace.length + 1); // remove instance name and id
+      //state = state.val;
 
-	// If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
-	// /**
-	//  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
-	//  * Using this method requires "common.messagebox" property to be set to true in io-package.json
-	//  * @param {ioBroker.Message} obj
-	//  */
-	// onMessage(obj) {
-	// 	if (typeof obj === 'object' && obj.message) {
-	// 		if (obj.command === 'send') {
-	// 			// e.g. send email or pushover or whatever
-	// 			this.log.info('send command');
+      // you can use the ack flag to detect if it is status (true) or command (false)
+      if (state && !state.ack) {
+        adapter.log.info('ack is not set!');
+      }
+    } catch (e) {
+      adapter.log.debug("Fehler Befehlsauswertung: " + e);
+    }
+  });
 
-	// 			// Send response in callback if required
-	// 			if (obj.callback) this.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-	// 		}
-	// 	}
-	// }
+  // you can use the ack flag to detect if it is status (true) or command (false)
 
-}
 
-if (require.main !== module) {
-	// Export the constructor in compact mode
-	/**
-	 * @param {Partial<utils.AdapterOptions>} [options={}]
-	 */
-	module.exports = (options) => new Cleveron(options);
+
+  // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
+  adapter.on('message', function(obj) {
+    if (typeof obj === 'object' && obj.message) {
+      if (obj.command === 'send') {
+        // e.g. send email or pushover or whatever
+        adapter.log('send command');
+
+        // Send response in callback if required
+        if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+      }
+    }
+  });
+
+  // is called when databases are connected and adapter received configuration.
+  adapter.on('ready', function() {
+    adapter.log.info('[START] Starting solarlog adapter');
+    adapter.setState('info.connection', true, true);
+    main();
+    adapter.subscribeStates('*');
+  });
+
+  return adapter;
+} // endStartAdapter
+
+
+function main() {
+
+  const user = adapter.config.user;
+  const pass = adapter.config.userpw;
+
+  const pollingtime = (adapter.config.poll * 60000) || 300000;
+
+  const loginpath = "login?username=" + user + "&password=" + pass;
+  const tokenurl = server + apipath + loginpath;
+
+  try {
+    firstrun = true;
+    gettoken(tokenurl);
+
+    if (!polling) {
+      polling = setTimeout(function repeat() { // poll states every [30] seconds
+        gettoken(tokenurl);
+        setTimeout(repeat, pollingTime);
+      }, pollingTime);
+    } // endIf
+
+
+  } catch (e) {
+    adapter.log.warn("Main connect error: " + e);
+  }
+} //endMain
+
+function gettoken(tokenurl) {
+  try {
+    var options = {
+      url: tokenurl,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'request'
+      }
+    };
+    adapter.log.debug("Options gettoken: " + options);
+    request(options, function(error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var info = JSON.parse(body); // info ist ein Objekt
+        adapter.log.debug(info);
+        adapter.log.debug('SessionToken= ' + info['sessionToken']);
+        sessiontoken = info['sessionToken'].toString();
+        getbuilding();
+      } else {
+        adapter.log.warn("Gettoken nicht erfolgreich! response= " + response);
+      }
+    });
+  } catch (e) {
+    adapter.log.warn("gettoken error: " + e);
+  }
+} //end gettoken
+
+function getbuilding() {
+  try {
+    adapter.log.debug("Sessiontoken: " + sessiontoken);
+    var options = {
+      url: server + apipath + buildingpath + sessiontoken,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'request'
+      }
+    };
+    adapter.log.debug("Options getbuilding: " + options);
+    request(options, function(error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var infob = JSON.parse(body); // info ist ein Objekt
+        adapter.log.debug(infob);
+        for (let ib = 0; ib < infob.length; ib++) {
+          adapter.log.debug(infob[ib]);
+          adapter.log.debug('BuildingID: ' + infob[ib]['objectId']);
+          buildingid[ib] = infob[ib]['objectId'];
+          dataarray[ib] = new Object();
+          dataarray[ib]['Info'] = infob[ib];
+          adapter.log.debug("Dataarray:" + JSON.stringify(dataarray));
+        }
+      } else {
+        adapter.log.warn("getbuilding nicht erfolgreich! response= " + response);
+      }
+
+      for (let bi = 0; bi < buildingid.length; bi++) {
+        getrooms(buildingid[bi], bi)
+      }
+    });
+  } catch (e) {
+    adapter.log.warn("getbuilding error: " + e);
+  }
+} //end getbuilding
+
+function getrooms(building, bi) {
+  try {
+    adapter.log.debug("SesstionToken: " + sessiontoken + "BuildingID: " + building + "BuildingNr: " + bi);
+    var options = {
+      url: server + apipath + "building/" + building + roompath + sessiontoken,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'request'
+      }
+    };
+    adapter.log.debug("Options getrooms: " + options);
+    request(options, function(error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var infor = JSON.parse(body); // info ist ein Objekt
+        adapter.log.debug(infor);
+        var rooms = new Array()
+        for (let ir = 0; ir < infor.length; ir++) {
+          adapter.log.debug("RaumID: " + infor[ir]['objectId']);
+          rooms[ir] = infor[ir]['objectId'];
+          dataarray[bi]['Rooms'] = new Object();
+          dataarray[bi]['Rooms'][rooms[ir]] = new Object();
+          dataarray[bi]['Rooms'][rooms[ir]]['Roominfo'] = new Object();
+          dataarray[bi]['Rooms'][rooms[ir]]['Roominfo'] = infor[ir];
+          adapter.log.debug("Dataarray:" + JSON.stringify(dataarray));
+        }
+        adapter.log.debug("Räume im Gebäude: " + rooms);
+        roomid[bi] = rooms;
+        adapter.log.debug("Räume: " + JSOM.stringify(roomid));
+      } else {
+        adapter.log.warn("getrooms nicht erfolgreich! response= " + response);
+      }
+
+      for (let ri = 0; ri < rooms.length; ri++) {
+        getdevices(rooms[ri], ri, building);
+      }
+    });
+  } catch (e) {
+    adapter.log.warn("getrooms error: " + e);
+  }
+} //getrooms
+
+function getdevices(room, ri, building) {
+  try {
+    adapter.log.debug("SessionToken: " + sessiontoken + "BuildingID: " + building + "RoomID: " + room + "RoomNr: " + ri);
+    var options = {
+      url: server + apipath + "room/" + room + devicepath + sessiontoken,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'request'
+      }
+    };
+    adapter.log.debug("Options getdevices: " + options);
+    request(options, function(error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var infod = JSON.parse(body); // info ist ein Objekt
+        adapter.log.debug(infod);
+        for (let id = 0; id < infod.length; id++) {
+          adapter.log.debug(infod[id]['objectId']);
+          adapter.log.debug("GEbäudenummer: " + buildingid.indexOf(building));
+          adapter.log.debug("raumnummer: " + roomid[buildingid.indexOf(building)].indexOf(room));
+
+          adapter.log.debug("gebäude/raum:" + "'" + building + "'" + "'" + room + "'");
+          dataarray[buildingid.indexOf(building)]['Rooms'][room]['Devices'] = new Object();
+          dataarray[buildingid.indexOf(building)]['Rooms'][room]['Devices'][infod[id]['objectId']] = infod;
+          adapter.log.debug("Dataarray:" + JSON.stringify(dataarray));
+          //adapter.log.debug("Länge Datenarray: " + dataarray.length);
+          if (firstrun == true) {
+            firstrun = false;
+            setobjectsfirstrun();
+          } else {
+            setstates();
+          }
+        }
+      } else {
+        adapter.log.warn("getdevices nicht erfolgreich! response= " + response);
+      }
+    });
+  } catch (e) {
+    adapter.log.warn("getrooms error: " + e);
+  }
+} //end getdevices
+
+function setobjectsfirstrun() {
+  try {
+    for (var sofb = 0; sofb < dataarray.length; sofb++) {
+      adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + ".objectId", {
+        type: 'state',
+        common: {
+          name: 'ObjektID Gebäude',
+          desc: 'Objekt-ID alphanummerisch, eindeutig Gebäude',
+          type: 'string',
+          role: "value",
+          read: true,
+          write: false
+        },
+        native: {}
+      });
+
+      adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + ".city", {
+        type: 'state',
+        common: {
+          name: 'Standort',
+          desc: 'Objektstandort (Stadt/Gemeinde)',
+          type: 'string',
+          role: "value",
+          read: true,
+          write: false
+        },
+        native: {}
+      });
+
+      for (var sofr = 0; sofr < dataarray[sofb]['Rooms'].length; sofr++) {
+        adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + ".objectId", {
+          type: 'state',
+          common: {
+            name: 'ObjektID Raum',
+            desc: 'Objekt-ID alphanummerisch, eindeutig Raum',
+            type: 'string',
+            role: "value",
+            read: true,
+            write: false
+          },
+          native: {}
+        });
+        adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + ".floor", {
+          type: 'state',
+          common: {
+            name: 'Etage',
+            desc: 'Etagennummer des Raums',
+            type: 'string',
+            role: "value",
+            read: true,
+            write: false
+          },
+          native: {}
+        });
+
+        for (var sofd = 0; sofd < dataarray[sofb]['Rooms'][sofr]['Devices'].length; sofd++) {
+          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".objectId", {
+            type: 'state',
+            common: {
+              name: 'ObjektID Gerät',
+              desc: 'Objekt-ID alphanummerisch, eindeutig Gerät',
+              type: 'string',
+              role: "value",
+              read: true,
+              write: false
+            },
+            native: {}
+          });
+          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".macAddress", {
+            type: 'state',
+            common: {
+              name: 'MAC-Adresse Gerät',
+              desc: 'MAC-Adresse Gerät',
+              type: 'string',
+              role: "value",
+              read: true,
+              write: false
+            },
+            native: {}
+          });
+          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".batteryVoltage", {
+            type: 'state',
+            common: {
+              name: 'Batteriespannung',
+              desc: 'Batteriespannung (-1 bei Netzanschluss)',
+              type: 'number',
+              role: "value",
+              read: true,
+              write: false,
+              unit: "V"
+            },
+            native: {}
+          });
+          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".co2", {
+            type: 'state',
+            common: {
+              name: 'Messwert CO2',
+              desc: 'CO2 - Messwert in ppm',
+              type: 'number',
+              role: "value",
+              read: true,
+              write: false,
+              unit: "ppm"
+            },
+            native: {}
+          });
+          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".lastMeasurement", {
+            type: 'state',
+            common: {
+              name: 'Letzte Messung',
+              desc: 'Datum und Uhrzeit der letzten Messung',
+              type: 'string',
+              role: "value",
+              read: true,
+              write: false
+            },
+            native: {}
+          });
+          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".temperature", {
+            type: 'state',
+            common: {
+              name: 'Temperatur',
+              desc: 'Temperaturwert',
+              type: 'number',
+              role: "value",
+              read: true,
+              write: false,
+              unit: "°C"
+            },
+            native: {}
+          });
+          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".humidity", {
+            type: 'state',
+            common: {
+              name: 'Feuchtigkeit',
+              desc: 'Relative Feuchte in %',
+              type: 'number',
+              role: "value",
+              read: true,
+              write: false,
+              unit: "%"
+            },
+            native: {}
+          });
+          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".wifiStrength", {
+            type: 'state',
+            common: {
+              name: 'Signalstärke',
+              desc: 'Sträke des WLAN - Signals',
+              type: 'number',
+              role: "value",
+              read: true,
+              write: false
+            },
+            native: {}
+          });
+          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".deviceType", {
+            type: 'state',
+            common: {
+              name: 'Gerätetyp',
+              desc: 'Gerätetyp, Art des Sensors',
+              type: 'string',
+              role: "value",
+              read: true,
+              write: false
+            },
+            native: {}
+          });
+        } //end rotation devices
+      } //end rotation rooms
+    } //end rotation Buildings
+
+    testend = setInterval(test, 2000);
+
+
+
+
+  } catch (e) {
+    adapter.log.warn("setobjectsfirstrun error: " + e);
+  }
+
+} //end setobjectsfirstrun
+
+function test() {
+  try {
+    adapter.getObject(dataarray[dataarray.length]['Info']['homeName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Roominfo']['roomName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'][(dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'].length)]['serialNumber'] + ".deviceType", function(err, obj) {
+      if (obj) {
+        adapter.log.debug("alle Objekte angelegt, schreibe Werte");
+        clearInterval(testend)
+        setstates();
+      } else {
+        adapter.log.warn("Noch nicht alle Objekte vorhanden");
+      }
+    });
+
+  } catch (e) {
+    adapter.log.warn("test error: " + e);
+  }
+} //end test
+
+function setstates() {
+  try {
+
+    adapter.log.debug("Jetzt würden die WErte gesetzt");
+
+  } catch (e) {
+    adapter.log.warn("setstates error: " + e);
+  }
+} //end setstates
+
+// If started as allInOne/compact mode => return function to create instance
+if (module && module.parent) {
+  module.exports = startAdapter;
 } else {
-	// otherwise start the instance directly
-	new Cleveron();
-}
+  // or start the instance directly
+  startAdapter();
+} // endElse

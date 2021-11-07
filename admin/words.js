@@ -37,5 +37,29 @@ systemDictionary = {
     "es": "Simplemente complete sus datos de inicio de sesión de cleveron",
     "pl": "Wystarczy wpisać sprytne dane logowania",
     "zh-cn": "只需填写您的cleveron登录数据"
+  },
+  'poll': {
+    "en": "polling interval",
+    "de": "Abrufintervall",
+    "ru": "интервал опроса",
+    "pt": "intervalo de votação",
+    "nl": "polling interval",
+    "fr": "intervalle d'interrogation",
+    "it": "intervallo di polling",
+    "es": "intervalo de votación",
+    "pl": "interwał odpytywania",
+    "zh-cn": "轮询间隔"
+  },
+  "polling": {
+    "en": "enter polling interval",
+    "de": "Abfrageintervall eingeben",
+    "ru": "введите интервал опроса",
+    "pt": "entrar no intervalo de sondagem",
+    "nl": "polling-interval invoeren",
+    "fr": "entrer l'intervalle d'interrogation",
+    "it": "inserire l'intervallo di polling",
+    "es": "ingrese el intervalo de sondeo",
+    "pl": "wprowadź interwał odpytywania",
+    "zh-cn": "输入轮询间隔"
   }
 };
