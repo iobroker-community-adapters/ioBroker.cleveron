@@ -6,7 +6,7 @@
     "name": "forelleblau",
     "email": "marceladam@gmx.ch"
   },
-  "homepage": "https://github.com/forelleblau/ioBroker.cleveron",
+  "homepage": "https://github.com/iobroker-community-adapters/ioBroker.cleveron",
   "license": "MIT",
   "keywords": [
     "Cleveron",
@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/forelleblau/ioBroker.cleveron"
+    "url": "https://github.com/iobroker-community-adapters/ioBroker.cleveron"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.5.1"
@@ -64,7 +64,7 @@
     "release": "release-script"
   },
   "bugs": {
-    "url": "https://github.com/forelleblau/ioBroker.cleveron/issues"
+    "url": "https://github.com/iobroker-community-adapters/ioBroker.cleveron/issues"
   },
   "readmeFilename": "README.md"
 }

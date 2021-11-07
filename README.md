@@ -6,11 +6,11 @@
 [![Downloads](https://img.shields.io/npm/dm/iobroker.cleveron.svg)](https://www.npmjs.com/package/iobroker.cleveron)
 ![Number of Installations](https://iobroker.live/badges/cleveron-installed.svg)
 ![Current version in stable repository](https://iobroker.live/badges/cleveron-stable.svg)
-[![Dependency Status](https://img.shields.io/david/forelleblau/iobroker.cleveron.svg)](https://david-dm.org/forelleblau/iobroker.cleveron)
+[![Dependency Status](https://img.shields.io/david/iobroker-community-adapters/iobroker.cleveron.svg)](https://david-dm.org/iobroker-community-adapters/iobroker.cleveron)
 
 [![NPM](https://nodei.co/npm/iobroker.cleveron.png?downloads=true)](https://nodei.co/npm/iobroker.cleveron/)
 
-**Tests:** ![Test and Release](https://github.com/forelleblau/ioBroker.cleveron/workflows/Test%20and%20Release/badge.svg)
+**Tests:** ![Test and Release](https://github.com/iobroker-community-adapters/ioBroker.cleveron/workflows/Test%20and%20Release/badge.svg)
 
 ## cleveron adapter for ioBroker
 
@@ -42,14 +42,14 @@ You are almost done, only a few steps left:
 1.  Link your local repository with the one on GitHub:  
 
     ```bash
-    git remote add origin https://github.com/forelleblau/ioBroker.cleveron
+    git remote add origin https://github.com/iobroker-community-adapters/ioBroker.cleveron
     ```
 
 2.  Push all files to the GitHub repo:  
     ```bash
     git push origin main
     ```
-3.  Add a new secret under <https://github.com/forelleblau/ioBroker.cleveron/settings/secrets>. It must be named `AUTO_MERGE_TOKEN` and contain a personal access token with push access to the repository, e.g. yours. You can create a new token under <https://github.com/settings/tokens>.
+3.  Add a new secret under <https://github.com/iobroker-community-adapters/ioBroker.cleveron/settings/secrets>. It must be named `AUTO_MERGE_TOKEN` and contain a personal access token with push access to the repository, e.g. yours. You can create a new token under <https://github.com/settings/tokens>.
 
 4.  Head over to [main.js](main.js) and start programming!
 
