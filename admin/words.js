@@ -51,16 +51,16 @@ systemDictionary = {
     "zh-cn": "只需填写您的cleveron登录数据"
   },
   'poll': {
-    "en": "polling interval",
-    "de": "Abrufintervall",
-    "ru": "интервал опроса",
-    "pt": "intervalo de votação",
-    "nl": "polling interval",
-    "fr": "intervalle d'interrogation",
-    "it": "intervallo di polling",
-    "es": "intervalo de votación",
-    "pl": "interwał odpytywania",
-    "zh-cn": "轮询间隔"
+    "en": "polling interval (minutes)",
+    "de": "Abfrageintervall (Minuten)",
+    "ru": "интервал опроса (минуты)",
+    "pt": "intervalo de sondagem (minutos)",
+    "nl": "polling interval (minuten)",
+    "fr": "intervalle d'interrogation (minutes)",
+    "it": "intervallo di polling (minuti)",
+    "es": "intervalo de sondeo (minutos)",
+    "pl": "interwał odpytywania (minuty)",
+    "zh-cn": "轮询间隔（分钟）"
   },
   "polling": {
     "en": "enter polling interval",

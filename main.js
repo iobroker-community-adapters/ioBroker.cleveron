@@ -230,7 +230,7 @@ function getrooms(building, bi) {
         }
         adapter.log.debug("Räume im Gebäude: " + rooms);
         roomid[bi] = rooms;
-        adapter.log.debug("Räume: " + JSOM.stringify(roomid));
+        adapter.log.debug("Räume: " + JSON.stringify(roomid));
       } else {
         adapter.log.warn("getrooms nicht erfolgreich! response= " + response);
       }
