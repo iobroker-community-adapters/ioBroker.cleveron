@@ -26,6 +26,18 @@ systemDictionary = {
     "pl": "użytkownik",
     "zh-cn": "用户"
   },
+  'userpw': {
+    "en": "password",
+    "de": "Passwort",
+    "ru": "пароль",
+    "pt": "senha",
+    "nl": "wachtwoord",
+    "fr": "le mot de passe",
+    "it": "parola d'ordine",
+    "es": "contraseña",
+    "pl": "hasło",
+    "zh-cn": "密码"
+  },
   'login': {
     "en": "Just fill in you cleveron login data",
     "de": "Geben Sie einfach Ihre cleveron-Login-Daten ein",

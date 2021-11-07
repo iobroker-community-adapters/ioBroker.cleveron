@@ -37,7 +37,7 @@ var testend;
 function startAdapter(options) {
   options = options || {};
   Object.assign(options, {
-    name: 'smappee'
+    name: 'cleveron'
   });
 
   adapter = new utils.Adapter(options);
@@ -45,7 +45,7 @@ function startAdapter(options) {
   // when adapter shuts down
   adapter.on('unload', function(callback) {
     try {
-      adapter.log.info('[END] Stopping smappee adapter...');
+      adapter.log.info('[END] Stopping CLEVERON adapter...');
       clearTimeout(polling);
       adapter.setState('info.connection', false, true);
       client.end();
@@ -492,6 +492,12 @@ function setstates() {
     adapter.log.warn("setstates error: " + e);
   }
 } //end setstates
+
+function restartAdapter() {
+  adapter.getForeignObject('system.adapter.' + adapter.namespace, (err, obj) => {
+    if (obj) adapter.setForeignObject('system.adapter.' + adapter.namespace, obj);
+  });
+} // endFunctionRestartAdapter
 
 // If started as allInOne/compact mode => return function to create instance
 if (module && module.parent) {
