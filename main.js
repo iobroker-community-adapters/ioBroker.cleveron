@@ -9,6 +9,8 @@
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const request = require('request');
 
+let adapter;
+
 const server = "https://server.cleveron.ch";
 const apipath = "/apiv1/";
 const buildingpath = "building?sessionToken=";
