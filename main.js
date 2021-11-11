@@ -68,22 +68,13 @@ function startAdapter(options) {
   // is called if a subscribed state changes
   adapter.on('stateChange', function(id, state) {
     // Warning, state can be null if it was deleted
+    adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
+    // you can use the ack flag to detect if it is status (true) or command (false)
 
-    try {
-      adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
-
-
-      if (!id || state.ack) return; // Ignore acknowledged state changes or error states
-      id = id.substring(adapter.namespace.length + 1); // remove instance name and id
-      //state = state.val;
-
-      // you can use the ack flag to detect if it is status (true) or command (false)
-      if (state && !state.ack) {
-        adapter.log.info('ack is not set!');
-      }
-    } catch (e) {
-      adapter.log.debug("Fehler Befehlsauswertung: " + e);
+    if (state && !state.ack) {
+      adapter.log.info('ack is not set!');
     }
+
   });
 
   // you can use the ack flag to detect if it is status (true) or command (false)
@@ -260,8 +251,8 @@ function getdevices(room, ri, building) {
         adapter.log.debug("infod: " + JSON.stringify(infod));
         for (let id = 0; id < infod.length; id++) {
           adapter.log.debug(infod[id]['objectId']);
-          adapter.log.debug("GEbäudenummer: " + buildingid.indexOf(building));
-          adapter.log.debug("raumnummer: " + roomid[buildingid.indexOf(building)].indexOf(room));
+          adapter.log.debug("Gebäudenummer: " + buildingid.indexOf(building));
+          adapter.log.debug("Raumnummer: " + roomid[buildingid.indexOf(building)].indexOf(room));
           dataarray[buildingid.indexOf(building)]['Rooms'][ri]['Devices'] = new Array();
           dataarray[buildingid.indexOf(building)]['Rooms'][ri]['Devices'][id] = infod[id];
           adapter.log.debug("Dataarray:" + JSON.stringify(dataarray));

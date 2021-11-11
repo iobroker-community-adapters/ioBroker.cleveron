@@ -14,7 +14,7 @@
 
 ## cleveron adapter for ioBroker
 
-Erhalte deine Daten aus der CLEVERON - API
+Erhalte deine Daten aus der CLEVERON - API (<https://www.cleveron.ch>)
 
 ## Manual
 
