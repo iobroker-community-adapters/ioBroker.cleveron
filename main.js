@@ -31,6 +31,7 @@ var dataarray = new Array();
 let polling;
 var firstrun;
 var testend;
+var pollingtime;
 
 
 
@@ -104,10 +105,10 @@ function startAdapter(options) {
 
   // is called when databases are connected and adapter received configuration.
   adapter.on('ready', function() {
-    adapter.log.info('[START] Starting solarlog adapter');
+    adapter.log.info('[START] Starting CLEVERON adapter');
     adapter.setState('info.connection', true, true);
     main();
-    adapter.subscribeStates('*');
+
   });
 
   return adapter;
@@ -119,7 +120,7 @@ function main() {
   const user = adapter.config.user;
   const pass = adapter.config.userpw;
 
-  const pollingtime = (adapter.config.poll * 60000) || 300000;
+  pollingtime = (adapter.config.poll * 60000) || 300000;
 
   const loginpath = "login?username=" + user + "&password=" + pass;
   const tokenurl = server + apipath + loginpath;
@@ -131,8 +132,8 @@ function main() {
     if (!polling) {
       polling = setTimeout(function repeat() { // poll states every [30] seconds
         gettoken(tokenurl);
-        setTimeout(repeat, pollingTime);
-      }, pollingTime);
+        setTimeout(repeat, pollingtime);
+      }, pollingtime);
     } // endIf
 
 
@@ -150,16 +151,16 @@ function gettoken(tokenurl) {
         'User-Agent': 'request'
       }
     };
-    adapter.log.debug("Options gettoken: " + options);
+    adapter.log.debug("Options gettoken: " + JSON.stringify(options));
     request(options, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var info = JSON.parse(body); // info ist ein Objekt
-        adapter.log.debug(info);
+        adapter.log.debug("info: " + JSON.stringify(info));
         adapter.log.debug('SessionToken= ' + info['sessionToken']);
         sessiontoken = info['sessionToken'].toString();
         getbuilding();
       } else {
-        adapter.log.warn("Gettoken nicht erfolgreich! response= " + response);
+        adapter.log.warn("Gettoken nicht erfolgreich! response= " + JSON.stringify(response));
       }
     });
   } catch (e) {
@@ -177,21 +178,21 @@ function getbuilding() {
         'User-Agent': 'request'
       }
     };
-    adapter.log.debug("Options getbuilding: " + options);
+    adapter.log.debug("Options getbuilding: " + JSON.stringify(options));
     request(options, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var infob = JSON.parse(body); // info ist ein Objekt
-        adapter.log.debug(infob);
+        adapter.log.debug("infob: " + JSON.stringify(infob));
         for (let ib = 0; ib < infob.length; ib++) {
-          adapter.log.debug(infob[ib]);
+          adapter.log.debug(JSON.stringify(infob[ib]));
           adapter.log.debug('BuildingID: ' + infob[ib]['objectId']);
           buildingid[ib] = infob[ib]['objectId'];
           dataarray[ib] = new Object();
-          dataarray[ib]['Info'] = infob[ib];
+          dataarray[ib] = infob[ib];
           adapter.log.debug("Dataarray:" + JSON.stringify(dataarray));
         }
       } else {
-        adapter.log.warn("getbuilding nicht erfolgreich! response= " + response);
+        adapter.log.warn("getbuilding nicht erfolgreich! response= " + JSON.stringify(response));
       }
 
       for (let bi = 0; bi < buildingid.length; bi++) {
@@ -205,7 +206,7 @@ function getbuilding() {
 
 function getrooms(building, bi) {
   try {
-    adapter.log.debug("SesstionToken: " + sessiontoken + "BuildingID: " + building + "BuildingNr: " + bi);
+    adapter.log.debug("SesstionToken: " + sessiontoken + " BuildingID: " + building + " BuildingNr: " + bi);
     var options = {
       url: server + apipath + "building/" + building + roompath + sessiontoken,
       method: 'GET',
@@ -213,19 +214,17 @@ function getrooms(building, bi) {
         'User-Agent': 'request'
       }
     };
-    adapter.log.debug("Options getrooms: " + options);
+    adapter.log.debug("Options getrooms: " + JSON.stringify(options));
     request(options, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var infor = JSON.parse(body); // info ist ein Objekt
-        adapter.log.debug(infor);
+        adapter.log.debug("infor: " + JSON.stringify(infor));
         var rooms = new Array()
         for (let ir = 0; ir < infor.length; ir++) {
           adapter.log.debug("RaumID: " + infor[ir]['objectId']);
           rooms[ir] = infor[ir]['objectId'];
-          dataarray[bi]['Rooms'] = new Object();
-          dataarray[bi]['Rooms'][rooms[ir]] = new Object();
-          dataarray[bi]['Rooms'][rooms[ir]]['Roominfo'] = new Object();
-          dataarray[bi]['Rooms'][rooms[ir]]['Roominfo'] = infor[ir];
+          dataarray[bi]['Rooms'] = new Array();
+          dataarray[bi]['Rooms'][ir] = infor[ir];
           adapter.log.debug("Dataarray:" + JSON.stringify(dataarray));
         }
         adapter.log.debug("Räume im Gebäude: " + rooms);
@@ -254,26 +253,24 @@ function getdevices(room, ri, building) {
         'User-Agent': 'request'
       }
     };
-    adapter.log.debug("Options getdevices: " + options);
+    adapter.log.debug("Options getdevices: " + JSON.stringify(options));
     request(options, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var infod = JSON.parse(body); // info ist ein Objekt
-        adapter.log.debug(infod);
+        adapter.log.debug("infod: " + JSON.stringify(infod));
         for (let id = 0; id < infod.length; id++) {
           adapter.log.debug(infod[id]['objectId']);
           adapter.log.debug("GEbäudenummer: " + buildingid.indexOf(building));
           adapter.log.debug("raumnummer: " + roomid[buildingid.indexOf(building)].indexOf(room));
-
-          adapter.log.debug("gebäude/raum:" + "'" + building + "'" + "'" + room + "'");
-          dataarray[buildingid.indexOf(building)]['Rooms'][room]['Devices'] = new Object();
-          dataarray[buildingid.indexOf(building)]['Rooms'][room]['Devices'][infod[id]['objectId']] = infod;
+          dataarray[buildingid.indexOf(building)]['Rooms'][ri]['Devices'] = new Array();
+          dataarray[buildingid.indexOf(building)]['Rooms'][ri]['Devices'][id] = infod[id];
           adapter.log.debug("Dataarray:" + JSON.stringify(dataarray));
           //adapter.log.debug("Länge Datenarray: " + dataarray.length);
           if (firstrun == true) {
             firstrun = false;
-            setobjectsfirstrun();
+            setobjectsfirstrun(dataarray);
           } else {
-            setstates();
+            setstates(dataarray);
           }
         }
       } else {
@@ -285,10 +282,12 @@ function getdevices(room, ri, building) {
   }
 } //end getdevices
 
-function setobjectsfirstrun() {
+function setobjectsfirstrun(dataarray) {
   try {
+    adapter.log.debug("Lege " + dataarray.length + " Gebäude an.");
     for (var sofb = 0; sofb < dataarray.length; sofb++) {
-      adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + ".objectId", {
+      adapter.log.debug("Lege Gebäude " + dataarray[sofb]['homeName'] + " an.");
+      adapter.setObjectNotExists(dataarray[sofb]['homeName'] + ".objectId", {
         type: 'state',
         common: {
           name: 'ObjektID Gebäude',
@@ -301,7 +300,7 @@ function setobjectsfirstrun() {
         native: {}
       });
 
-      adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + ".city", {
+      adapter.setObjectNotExists(dataarray[sofb]['homeName'] + ".city", {
         type: 'state',
         common: {
           name: 'Standort',
@@ -314,8 +313,12 @@ function setobjectsfirstrun() {
         native: {}
       });
 
+
+
+      adapter.log.debug("Lege " + dataarray[sofb]['Rooms'].length + " Räume im " + (sofb + 1) + "ten Gebäude an.");
       for (var sofr = 0; sofr < dataarray[sofb]['Rooms'].length; sofr++) {
-        adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + ".objectId", {
+        adapter.log.debug("Lege Raum " + dataarray[sofb]['Rooms'][sofr]['roomName'] + " im Gebäude " + dataarray[sofb]['homeName'] + " an.");
+        adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + ".objectId", {
           type: 'state',
           common: {
             name: 'ObjektID Raum',
@@ -327,12 +330,12 @@ function setobjectsfirstrun() {
           },
           native: {}
         });
-        adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + ".floor", {
+        adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + ".floor", {
           type: 'state',
           common: {
             name: 'Etage',
             desc: 'Etagennummer des Raums',
-            type: 'string',
+            type: 'number',
             role: "value",
             read: true,
             write: false
@@ -341,7 +344,7 @@ function setobjectsfirstrun() {
         });
 
         for (var sofd = 0; sofd < dataarray[sofb]['Rooms'][sofr]['Devices'].length; sofd++) {
-          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".objectId", {
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".objectId", {
             type: 'state',
             common: {
               name: 'ObjektID Gerät',
@@ -353,7 +356,7 @@ function setobjectsfirstrun() {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".macAddress", {
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".macAddress", {
             type: 'state',
             common: {
               name: 'MAC-Adresse Gerät',
@@ -365,7 +368,7 @@ function setobjectsfirstrun() {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".batteryVoltage", {
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".batteryVoltage", {
             type: 'state',
             common: {
               name: 'Batteriespannung',
@@ -378,7 +381,7 @@ function setobjectsfirstrun() {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".co2", {
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".co2", {
             type: 'state',
             common: {
               name: 'Messwert CO2',
@@ -391,7 +394,7 @@ function setobjectsfirstrun() {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".lastMeasurement", {
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".lastMeasurement", {
             type: 'state',
             common: {
               name: 'Letzte Messung',
@@ -403,7 +406,7 @@ function setobjectsfirstrun() {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".temperature", {
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".temperature", {
             type: 'state',
             common: {
               name: 'Temperatur',
@@ -416,7 +419,7 @@ function setobjectsfirstrun() {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".humidity", {
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".humidity", {
             type: 'state',
             common: {
               name: 'Feuchtigkeit',
@@ -429,10 +432,10 @@ function setobjectsfirstrun() {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".wifiStrength", {
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".wifiStrength", {
             type: 'state',
             common: {
-              name: 'Signalstärke',
+              name: 'Signalstärke WIFI',
               desc: 'Sträke des WLAN - Signals',
               type: 'number',
               role: "value",
@@ -441,7 +444,7 @@ function setobjectsfirstrun() {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['Info']['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['Roominfo']['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".deviceType", {
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".deviceType", {
             type: 'state',
             common: {
               name: 'Gerätetyp',
@@ -453,11 +456,13 @@ function setobjectsfirstrun() {
             },
             native: {}
           });
+
+          setTimeout(setstates, 2000)
         } //end rotation devices
       } //end rotation rooms
     } //end rotation Buildings
 
-    testend = setInterval(test, 2000);
+
 
 
 
@@ -468,9 +473,10 @@ function setobjectsfirstrun() {
 
 } //end setobjectsfirstrun
 
-function test() {
+/*function test() {
   try {
-    adapter.getObject(dataarray[dataarray.length]['Info']['homeName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Roominfo']['roomName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'][(dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'].length)]['serialNumber'] + ".deviceType", function(err, obj) {
+    adapter.log.debug("letzter Wert vom letzten Gerät im letzten Gebäude: " + dataarray[dataarray.length]['homeName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['roomName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'][(dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'].length)]['serialNumber'] + ".deviceType")
+    adapter.getObject(dataarray[dataarray.length]['homeName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['roomName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'][(dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'].length)]['serialNumber'] + ".deviceType", function(err, obj) {
       if (obj) {
         adapter.log.debug("alle Objekte angelegt, schreibe Werte");
         clearInterval(testend)
@@ -483,12 +489,44 @@ function test() {
   } catch (e) {
     adapter.log.warn("test error: " + e);
   }
-} //end test
+} */ //end test
 
 function setstates() {
   try {
 
-    adapter.log.debug("Jetzt würden die WErte gesetzt");
+    adapter.log.debug("Jetzt werden die Werte gesetzt");
+    for (var ssb = 0; ssb < dataarray.length; ssb++) {
+
+      adapter.setState(dataarray[ssb]['homeName'] + ".objectId", dataarray[ssb]['objectId'], true);
+      adapter.setState(dataarray[ssb]['homeName'] + ".city", dataarray[ssb]['city'], true);
+
+
+      for (var ssr = 0; ssr < dataarray[ssb]['Rooms'].length; ssr++) {
+        adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + ".objectId", dataarray[ssb]['Rooms'][ssr]['objectId'], true);
+        adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + ".floor", dataarray[ssb]['Rooms'][ssr]['floor'], true);
+
+        for (var ssd = 0; ssd < dataarray[ssb]['Rooms'][ssr]['Devices'].length; ssd++) {
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".objectId", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['objectId'], true);
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".macAddress", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['macAddress'], true);
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".batteryVoltage", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['batteryVoltage'], true);
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".co2", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['co2'], true);
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".lastMeasurement", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['lastMeasurementDate']['iso'], true);
+
+          //Temperature Data not provided by API: Reported to developer.
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".temperature", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['temperature'], true);
+
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".humidity", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['humidity'], true);
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".wifiStrength", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['wifiStrength'], true);
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".deviceType", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['deviceType'], true);
+
+
+        } //end rotation devices
+      } //end rotation rooms
+    } //end rotation Buildings
+
+
+
+
 
   } catch (e) {
     adapter.log.warn("setstates error: " + e);
