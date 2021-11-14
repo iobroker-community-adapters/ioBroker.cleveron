@@ -23,7 +23,7 @@ Erhalte deine Daten aus der CLEVERON - API (<https://www.cleveron.ch>)
 
 -   Add the desired pooling - interval in Minutes.
 
--   Restart adapter if you added new devices to your home.
+-   Restart adapter if you added new devices, room or homes, or if you changed any settings.
 
 ## Changelog
 

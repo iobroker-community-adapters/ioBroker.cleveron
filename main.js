@@ -50,18 +50,18 @@ function startAdapter(options) {
     try {
       adapter.log.info('[END] Stopping CLEVERON adapter...');
       clearTimeout(polling);
+      clearTimeout(setstatesstartup);
       adapter.setState('info.connection', false, true);
-      client.end();
       callback();
     } catch (e) {
-      adapter.log && adapter.log.warn("[END 7 catch] adapter stopped ")
+      adapter.log && adapter.log.warn("[END 7 catch] adapter stopped " + e);
       callback();
     }
   });
 
   // is called if a subscribed object changes
   adapter.on('objectChange', function(id, obj) {
-    // Warning, obj can be null if it was deleted
+    // Warning, obj can be null if it was deleted.
     adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
   });
 
@@ -127,6 +127,7 @@ function main() {
       }, pollingtime);
     } // endIf
 
+    adapter.subscribeStates('*');
 
   } catch (e) {
     adapter.log.warn("Main connect error: " + e);
@@ -258,9 +259,11 @@ function getdevices(room, ri, building) {
           adapter.log.debug("Dataarray:" + JSON.stringify(dataarray));
           //adapter.log.debug("Länge Datenarray: " + dataarray.length);
           if (firstrun == true) {
+            adapter.log.debug("firstrun = " + firstrun + " Lege wenn nötige Objekte an und setzte alle Werte");
             firstrun = false;
             setobjectsfirstrun(dataarray);
           } else {
+            adapter.log.debug("firstrun = " + firstrun + " setze laufende Werte neu");
             setstates(dataarray);
           }
         }
@@ -269,7 +272,7 @@ function getdevices(room, ri, building) {
       }
     });
   } catch (e) {
-    adapter.log.warn("getrooms error: " + e);
+    adapter.log.warn("getdevices error: " + e);
   }
 } //end getdevices
 
@@ -284,7 +287,7 @@ function setobjectsfirstrun(dataarray) {
           name: 'ObjektID Gebäude',
           desc: 'Objekt-ID alphanummerisch, eindeutig Gebäude',
           type: 'string',
-          role: "value",
+          role: "info.serial",
           read: true,
           write: false
         },
@@ -297,7 +300,7 @@ function setobjectsfirstrun(dataarray) {
           name: 'Standort',
           desc: 'Objektstandort (Stadt/Gemeinde)',
           type: 'string',
-          role: "value",
+          role: "info.address",
           read: true,
           write: false
         },
@@ -315,7 +318,7 @@ function setobjectsfirstrun(dataarray) {
             name: 'ObjektID Raum',
             desc: 'Objekt-ID alphanummerisch, eindeutig Raum',
             type: 'string',
-            role: "value",
+            role: "info.name",
             read: true,
             write: false
           },
@@ -327,7 +330,7 @@ function setobjectsfirstrun(dataarray) {
             name: 'Etage',
             desc: 'Etagennummer des Raums',
             type: 'number',
-            role: "value",
+            role: "info.address",
             read: true,
             write: false
           },
@@ -341,7 +344,7 @@ function setobjectsfirstrun(dataarray) {
               name: 'ObjektID Gerät',
               desc: 'Objekt-ID alphanummerisch, eindeutig Gerät',
               type: 'string',
-              role: "value",
+              role: "info.name",
               read: true,
               write: false
             },
@@ -353,7 +356,7 @@ function setobjectsfirstrun(dataarray) {
               name: 'MAC-Adresse Gerät',
               desc: 'MAC-Adresse Gerät',
               type: 'string',
-              role: "value",
+              role: "info.mac",
               read: true,
               write: false
             },
@@ -365,7 +368,7 @@ function setobjectsfirstrun(dataarray) {
               name: 'Batteriespannung',
               desc: 'Batteriespannung (-1 bei Netzanschluss)',
               type: 'number',
-              role: "value",
+              role: "value.battery",
               read: true,
               write: false,
               unit: "V"
@@ -378,7 +381,7 @@ function setobjectsfirstrun(dataarray) {
               name: 'Messwert CO2',
               desc: 'CO2 - Messwert in ppm',
               type: 'number',
-              role: "value",
+              role: "value.CO2",
               read: true,
               write: false,
               unit: "ppm"
@@ -391,7 +394,7 @@ function setobjectsfirstrun(dataarray) {
               name: 'Letzte Messung',
               desc: 'Datum und Uhrzeit der letzten Messung',
               type: 'string',
-              role: "value",
+              role: "date",
               read: true,
               write: false
             },
@@ -403,7 +406,7 @@ function setobjectsfirstrun(dataarray) {
               name: 'Temperatur',
               desc: 'Temperaturwert',
               type: 'number',
-              role: "value",
+              role: "value.temperature",
               read: true,
               write: false,
               unit: "°C"
@@ -416,7 +419,7 @@ function setobjectsfirstrun(dataarray) {
               name: 'Feuchtigkeit',
               desc: 'Relative Feuchte in %',
               type: 'number',
-              role: "value",
+              role: "value.humidity",
               read: true,
               write: false,
               unit: "%"
@@ -429,7 +432,7 @@ function setobjectsfirstrun(dataarray) {
               name: 'Signalstärke WIFI',
               desc: 'Sträke des WLAN - Signals',
               type: 'number',
-              role: "value",
+              role: "value.wifi",
               read: true,
               write: false
             },
@@ -441,14 +444,14 @@ function setobjectsfirstrun(dataarray) {
               name: 'Gerätetyp',
               desc: 'Gerätetyp, Art des Sensors',
               type: 'string',
-              role: "value",
+              role: "info.name",
               read: true,
               write: false
             },
             native: {}
           });
 
-          setTimeout(setstates, 2000)
+          setTimeout(setstatesstartup, 2000);
         } //end rotation devices
       } //end rotation rooms
     } //end rotation Buildings
@@ -464,28 +467,10 @@ function setobjectsfirstrun(dataarray) {
 
 } //end setobjectsfirstrun
 
-/*function test() {
-  try {
-    adapter.log.debug("letzter Wert vom letzten Gerät im letzten Gebäude: " + dataarray[dataarray.length]['homeName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['roomName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'][(dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'].length)]['serialNumber'] + ".deviceType")
-    adapter.getObject(dataarray[dataarray.length]['homeName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['roomName'] + "." + dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'][(dataarray[dataarray.length]['Rooms'][(dataarray[dataarray.length]['Rooms'].length)]['Devices'].length)]['serialNumber'] + ".deviceType", function(err, obj) {
-      if (obj) {
-        adapter.log.debug("alle Objekte angelegt, schreibe Werte");
-        clearInterval(testend)
-        setstates();
-      } else {
-        adapter.log.warn("Noch nicht alle Objekte vorhanden");
-      }
-    });
-
-  } catch (e) {
-    adapter.log.warn("test error: " + e);
-  }
-} */ //end test
-
-function setstates() {
+function setstatesstartup() {
   try {
 
-    adapter.log.debug("Jetzt werden die Werte gesetzt");
+    adapter.log.debug("Jetzt werden die statischen Werte gesetzt");
     for (var ssb = 0; ssb < dataarray.length; ssb++) {
 
       adapter.setState(dataarray[ssb]['homeName'] + ".objectId", dataarray[ssb]['objectId'], true);
@@ -499,6 +484,49 @@ function setstates() {
         for (var ssd = 0; ssd < dataarray[ssb]['Rooms'][ssr]['Devices'].length; ssd++) {
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".objectId", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['objectId'], true);
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".macAddress", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['macAddress'], true);
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".batteryVoltage", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['batteryVoltage'], true);
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".co2", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['co2'], true);
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".lastMeasurement", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['lastMeasurementDate']['iso'], true);
+
+          //Temperature Data not provided by API: Reported to developer.
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".temperature", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['temperature'], true);
+
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".humidity", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['humidity'], true);
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".wifiStrength", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['wifiStrength'], true);
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".deviceType", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['deviceType'], true);
+
+
+        } //end rotation devices
+      } //end rotation rooms
+    } //end rotation Buildings
+
+
+    setstates();
+
+
+  } catch (e) {
+    adapter.log.warn("setstatesstartup error: " + e);
+  }
+} //end setstatesstartup
+
+function setstates() {
+  try {
+
+    adapter.log.debug("Jetzt werden die laufenden Werte gesetzt");
+    for (var ssb = 0; ssb < dataarray.length; ssb++) {
+
+      //adapter.setState(dataarray[ssb]['homeName'] + ".objectId", dataarray[ssb]['objectId'], true);
+      //adapter.setState(dataarray[ssb]['homeName'] + ".city", dataarray[ssb]['city'], true);
+
+
+      for (var ssr = 0; ssr < dataarray[ssb]['Rooms'].length; ssr++) {
+        //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + ".objectId", dataarray[ssb]['Rooms'][ssr]['objectId'], true);
+        //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + ".floor", dataarray[ssb]['Rooms'][ssr]['floor'], true);
+
+        for (var ssd = 0; ssd < dataarray[ssb]['Rooms'][ssr]['Devices'].length; ssd++) {
+          adapter.log.debug(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + " Gerätedaten: " + JSON.stringify(dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]));
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".objectId", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['objectId'], true);
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".macAddress", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['macAddress'], true);
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".batteryVoltage", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['batteryVoltage'], true);
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".co2", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['co2'], true);
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".lastMeasurement", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['lastMeasurementDate']['iso'], true);
@@ -508,7 +536,7 @@ function setstates() {
 
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".humidity", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['humidity'], true);
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".wifiStrength", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['wifiStrength'], true);
-          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".deviceType", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['deviceType'], true);
+          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".deviceType", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['deviceType'], true);
 
 
         } //end rotation devices
