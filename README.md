@@ -21,7 +21,7 @@ Erhalte deine Daten aus der CLEVERON - API (<https://www.cleveron.ch>)
 -   You just need your cleveron-login-data.
 -   The adapter gets all building, room an device - data that is provided by the cleveron API.
 
--   Add the desired pooling - interval in Minutes.
+-   Add the desired polling - interval in minutes.
 
 -   Restart adapter if you added new devices, room or homes, or if you changed any settings.
 
