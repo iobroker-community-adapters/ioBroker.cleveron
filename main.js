@@ -7,7 +7,7 @@
 'use strict';
 
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
-const request = require('request');
+const got = require('got');
 
 let adapter;
 
@@ -136,25 +136,27 @@ function main() {
 
 function gettoken(tokenurl) {
   try {
-    var options = {
-      url: tokenurl,
-      method: 'GET',
-      headers: {
-        'User-Agent': 'request'
-      }
-    };
-    adapter.log.debug("Options gettoken: " + JSON.stringify(options));
-    request(options, function(error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var info = JSON.parse(body); // info ist ein Objekt
+    (async () => {
+      try {
+        const response = await got(tokenurl);
+        adapter.log.debug('Status-Code: ' + response.statusCode);
+        adapter.log.debug('Header: ' + JSON.stringify(response.headers));
+        adapter.log.debug('Response.body= ' + response.body);
+        var info = JSON.parse(response.body); // info ist ein Objekt
         adapter.log.debug("info: " + JSON.stringify(info));
         adapter.log.debug('SessionToken= ' + info['sessionToken']);
         sessiontoken = info['sessionToken'].toString();
         getbuilding();
-      } else {
-        adapter.log.warn("Gettoken nicht erfolgreich! response= " + JSON.stringify(response));
+
+      } catch (error) {
+        adapter.log.warn("Error.Code: " + error.response.statusCode);
+        if (error.response.statusCode == 500) {
+          adapter.log.warn("gettoken - got - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
+        } else {
+          adapter.log.warn("gettoken - got - Fehler: " + error + ", " + error.response.body);
+        }
       }
-    });
+    })();
   } catch (e) {
     adapter.log.warn("gettoken error: " + e);
   }
@@ -163,17 +165,15 @@ function gettoken(tokenurl) {
 function getbuilding() {
   try {
     adapter.log.debug("Sessiontoken: " + sessiontoken);
-    var options = {
-      url: server + apipath + buildingpath + sessiontoken,
-      method: 'GET',
-      headers: {
-        'User-Agent': 'request'
-      }
-    };
-    adapter.log.debug("Options getbuilding: " + JSON.stringify(options));
-    request(options, function(error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var infob = JSON.parse(body); // info ist ein Objekt
+    var options = server + apipath + buildingpath + sessiontoken;
+    adapter.log.debug("Options: " + options);
+    (async () => {
+      try {
+        const response = await got(options);
+        adapter.log.debug('Status-Code: ' + response.statusCode);
+        adapter.log.debug('Header: ' + JSON.stringify(response.headers));
+        adapter.log.debug('Response.body= ' + response.body);
+        var infob = JSON.parse(response.body); // info ist ein Objekt
         adapter.log.debug("infob: " + JSON.stringify(infob));
         for (let ib = 0; ib < infob.length; ib++) {
           adapter.log.debug(JSON.stringify(infob[ib]));
@@ -183,14 +183,19 @@ function getbuilding() {
           dataarray[ib] = infob[ib];
           adapter.log.debug("Dataarray:" + JSON.stringify(dataarray));
         }
-      } else {
-        adapter.log.warn("getbuilding nicht erfolgreich! response= " + JSON.stringify(response));
-      }
 
-      for (let bi = 0; bi < buildingid.length; bi++) {
-        getrooms(buildingid[bi], bi)
+        for (let bi = 0; bi < buildingid.length; bi++) {
+          getrooms(buildingid[bi], bi)
+        }
+      } catch (error) {
+        adapter.log.warn("Error.Code: " + error.response.statusCode);
+        if (error.response.statusCode == 500) {
+          adapter.log.warn("getbuilding - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
+        } else {
+          adapter.log.warn("getbuilding - Fehler: " + error + ", " + error.response.body);
+        }
       }
-    });
+    })();
   } catch (e) {
     adapter.log.warn("getbuilding error: " + e);
   }
@@ -199,17 +204,15 @@ function getbuilding() {
 function getrooms(building, bi) {
   try {
     adapter.log.debug("SesstionToken: " + sessiontoken + " BuildingID: " + building + " BuildingNr: " + bi);
-    var options = {
-      url: server + apipath + "building/" + building + roompath + sessiontoken,
-      method: 'GET',
-      headers: {
-        'User-Agent': 'request'
-      }
-    };
-    adapter.log.debug("Options getrooms: " + JSON.stringify(options));
-    request(options, function(error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var infor = JSON.parse(body); // info ist ein Objekt
+    var options = server + apipath + "building/" + building + roompath + sessiontoken;
+    adapter.log.debug("Options: " + options);
+    (async () => {
+      try {
+        const response = await got(options);
+        adapter.log.debug('Status-Code: ' + response.statusCode);
+        adapter.log.debug('Header: ' + JSON.stringify(response.headers));
+        adapter.log.debug('Response.body= ' + response.body);
+        var infor = JSON.parse(response.body); // info ist ein Objekt
         adapter.log.debug("infor: " + JSON.stringify(infor));
         var rooms = new Array()
         for (let ir = 0; ir < infor.length; ir++) {
@@ -222,14 +225,19 @@ function getrooms(building, bi) {
         adapter.log.debug("Räume im Gebäude: " + rooms);
         roomid[bi] = rooms;
         adapter.log.debug("Räume: " + JSON.stringify(roomid));
-      } else {
-        adapter.log.warn("getrooms nicht erfolgreich! response= " + response);
-      }
 
-      for (let ri = 0; ri < rooms.length; ri++) {
-        getdevices(rooms[ri], ri, building);
+        for (let ri = 0; ri < rooms.length; ri++) {
+          getdevices(rooms[ri], ri, building);
+        }
+      } catch (error) {
+        adapter.log.warn("Error.Code: " + error.response.statusCode);
+        if (error.response.statusCode == 500) {
+          adapter.log.warn("getrooms - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
+        } else {
+          adapter.log.warn("getrooms - Fehler: " + error + ", " + error.response.body);
+        }
       }
-    });
+    })();
   } catch (e) {
     adapter.log.warn("getrooms error: " + e);
   }
@@ -238,17 +246,15 @@ function getrooms(building, bi) {
 function getdevices(room, ri, building) {
   try {
     adapter.log.debug("SessionToken: " + sessiontoken + "BuildingID: " + building + "RoomID: " + room + "RoomNr: " + ri);
-    var options = {
-      url: server + apipath + "room/" + room + devicepath + sessiontoken,
-      method: 'GET',
-      headers: {
-        'User-Agent': 'request'
-      }
-    };
-    adapter.log.debug("Options getdevices: " + JSON.stringify(options));
-    request(options, function(error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var infod = JSON.parse(body); // info ist ein Objekt
+    var options = server + apipath + "room/" + room + devicepath + sessiontoken;
+    adapter.log.debug("Options getdevices: " + options);
+    (async () => {
+      try {
+        const response = await got(options);
+        adapter.log.debug('Status-Code: ' + response.statusCode);
+        adapter.log.debug('Header: ' + JSON.stringify(response.headers));
+        adapter.log.debug('Response.body= ' + response.body);
+        var infod = JSON.parse(response.body); // info ist ein Objekt
         adapter.log.debug("infod: " + JSON.stringify(infod));
         for (let id = 0; id < infod.length; id++) {
           adapter.log.debug(infod[id]['objectId']);
@@ -267,10 +273,15 @@ function getdevices(room, ri, building) {
             setstates(dataarray);
           }
         }
-      } else {
-        adapter.log.warn("getdevices nicht erfolgreich! response= " + response);
+      } catch (error) {
+        adapter.log.warn("Error.Code: " + error.response.statusCode);
+        if (error.response.statusCode == 500) {
+          adapter.log.warn("getdevices - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
+        } else {
+          adapter.log.warn("getdevices - Fehler: " + error + ", " + error.response.body);
+        }
       }
-    });
+    })();
   } catch (e) {
     adapter.log.warn("getdevices error: " + e);
   }
@@ -530,10 +541,7 @@ function setstates() {
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".batteryVoltage", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['batteryVoltage'], true);
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".co2", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['co2'], true);
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".lastMeasurement", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['lastMeasurementDate']['iso'], true);
-
-          //Temperature Data not provided by API: Reported to developer.
-          //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".temperature", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['temperature'], true);
-
+          adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".temperature", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['temperature'], true);
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".humidity", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['humidity'], true);
           adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".wifiStrength", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['wifiStrength'], true);
           //adapter.setState(dataarray[ssb]['homeName'] + "." + dataarray[ssb]['Rooms'][ssr]['roomName'] + "." + dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['serialNumber'] + ".deviceType", dataarray[ssb]['Rooms'][ssr]['Devices'][ssd]['deviceType'], true);

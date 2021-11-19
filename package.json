@@ -19,7 +19,8 @@
     "url": "https://github.com/iobroker-community-adapters/ioBroker.cleveron"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.5.1"
+    "@iobroker/adapter-core": "^2.5.1",
+    "got": "^11.8.3"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.4.1",
