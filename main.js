@@ -16,6 +16,7 @@ const apipath = "/apiv1/";
 const buildingpath = "building?sessionToken=";
 const roompath = "/room?sessionToken=";
 const devicepath = "/devices?sessionToken=";
+var tokenurl = "";
 
 
 var sessiontoken;
@@ -114,15 +115,15 @@ function main() {
   pollingtime = (adapter.config.poll * 60000) || 300000;
 
   const loginpath = "login?username=" + user + "&password=" + pass;
-  const tokenurl = server + apipath + loginpath;
+  tokenurl = server + apipath + loginpath;
 
   try {
     firstrun = true;
-    gettoken(tokenurl);
+    gettoken();
 
     if (!polling) {
       polling = setTimeout(function repeat() { // poll states every [30] seconds
-        gettoken(tokenurl);
+        gettoken();
         setTimeout(repeat, pollingtime);
       }, pollingtime);
     } // endIf
@@ -134,7 +135,8 @@ function main() {
   }
 } //endMain
 
-function gettoken(tokenurl) {
+function gettoken() {
+  adapter.log.debug("Tokenurl= " + tokenurl);
   try {
     (async () => {
       try {
@@ -149,12 +151,13 @@ function gettoken(tokenurl) {
         getbuilding();
 
       } catch (error) {
-        adapter.log.warn("Error.Code: " + error.response.statusCode);
-        if (error.response.statusCode == 500) {
-          adapter.log.warn("gettoken - got - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
-        } else {
-          adapter.log.warn("gettoken - got - Fehler: " + error + ", " + error.response.body);
-        }
+        adapter.log.warn("gettoken - got - error: " + error)
+        /*.response.statusCode);
+               if (error.response.statusCode == 500) {
+                 adapter.log.warn("gettoken - got - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
+               } else {
+                 adapter.log.warn("gettoken - got - Fehler: " + error + ", " + error.response.body);
+               }*/
       }
     })();
   } catch (e) {
