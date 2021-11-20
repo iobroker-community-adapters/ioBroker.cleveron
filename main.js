@@ -59,6 +59,7 @@ function startAdapter(options) {
       adapter.log.info('[END] Stopping CLEVERON adapter...');
       clearTimeout(polling);
       clearTimeout(setstatesstartup);
+      response.cancel();
       adapter.setState('info.connection', false, true);
       callback();
     } catch (e) {
@@ -90,7 +91,7 @@ function startAdapter(options) {
 
 
   // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-  adapter.on('message', function(obj) {
+  /*adapter.on('message', function(obj) {
     if (typeof obj === 'object' && obj.message) {
       if (obj.command === 'send') {
         // e.g. send email or pushover or whatever
@@ -100,7 +101,8 @@ function startAdapter(options) {
         if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
       }
     }
-  });
+  });,
+  */
 
   // is called when databases are connected and adapter received configuration.
   adapter.on('ready', function() {
