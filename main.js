@@ -59,7 +59,6 @@ function startAdapter(options) {
       adapter.log.info('[END] Stopping CLEVERON adapter...');
       clearTimeout(polling);
       clearTimeout(setstatesstartup);
-      response.cancel();
       adapter.setState('info.connection', false, true);
       callback();
     } catch (e) {
@@ -109,7 +108,7 @@ function startAdapter(options) {
     adapter.log.info('[START] Starting CLEVERON adapter');
 
     adapter.log.debug("ready - Adapter: databases are connected and adapter received configuration");
-    adapter.log.silly("config.userpw verschlüsselt: " + adapter.config.userpw);
+    adapter.log.debug("config.userpw verschlüsselt: " + adapter.config.userpw);
 
     adapter.getForeignObject("system.config", (err, obj) => {
       if (obj && obj.native && obj.native.secret) {
@@ -120,6 +119,8 @@ function startAdapter(options) {
         adapter.config.userpw = decrypt("Zgfr56gFe87jJOM", adapter.config.userpw);
       };
       adapter.setState('info.connection', true, true);
+
+      adapter.log.debug("config.userpw unverschlüsselt: " + adapter.config.userpw);
       main();
     });
   });

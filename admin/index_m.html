@@ -97,12 +97,19 @@
 			var obj = {};
 			$('.value').each(function() {
 				var $this = $(this);
+				var id = $this.attr('id');
 				if ($this.attr('type') === 'checkbox') {
 					obj[$this.attr('id')] = $this.prop('checked');
 				} else if ($this.attr('type') === 'number') {
 					obj[$this.attr('id')] = parseFloat($this.val());
 				} else {
 					obj[$this.attr('id')] = $this.val();
+					var value = $this.val();
+					if (id === 'userpw') {
+						value = encrypt(secret, settings[id]);
+					}
+					obj[id] = value;
+
 				}
 			});
 			callback(obj);
