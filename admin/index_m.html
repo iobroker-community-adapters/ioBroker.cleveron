@@ -68,6 +68,16 @@
 		}
 
 
+		function load(settings, onChange) {
+			socket.emit('getObject', 'system.config', function(err, obj) {
+				secret = (obj.native ? obj.native.secret : '') || 'Zgfr56gFe87jJOM';
+				loadHelper(settings, onChange);
+			});
+			onChange(false);
+		}
+
+		/*
+
 		// This will be called by the admin adapter when the settings page loads
 		function load(settings, onChange) {
 			// example: select elements with id=key and class=value and insert value
@@ -82,7 +92,10 @@
 				} else {
 					// do not call onChange direct, because onChange could expect some arguments
 					$key.val(settings[id])
-						.on('change', () => onChange())
+					if (id === 'userpw') {
+						settings[id] = decrypt(secret, settings[id]);
+					}
+					.on('change', () => onChange())
 						.on('keyup', () => onChange());
 				}
 			});
@@ -90,8 +103,33 @@
 			// reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
 			if (M) M.updateTextFields();
 		}
-
+*/
 		// This will be called by the admin adapter when the user presses the save button
+		/*		function save(callback) {
+					// example: select elements with class=value and build settings object
+					var obj = {};
+					$('.value').each(function() {
+						var $this = $(this);
+						var id = $this.attr('id');
+						if ($this.attr('type') === 'checkbox') {
+							obj[$this.attr('id')] = $this.prop('checked');
+						} else if ($this.attr('type') === 'number') {
+							obj[$this.attr('id')] = parseFloat($this.val());
+						} else {
+							obj[$this.attr('id')] = $this.val();
+							var value = $this.val();
+							if (id === 'userpw') {
+								value = encrypt(secret, settings[id]);
+							}
+							obj[$this.attr('id')] = value;
+
+						}
+					});
+					callback(obj);
+				}
+
+				*/
+
 		function save(callback) {
 			// example: select elements with class=value and build settings object
 			var obj = {};
@@ -99,19 +137,16 @@
 				var $this = $(this);
 				var id = $this.attr('id');
 				if ($this.attr('type') === 'checkbox') {
-					obj[$this.attr('id')] = $this.prop('checked');
-				} else if ($this.attr('type') === 'number') {
-					obj[$this.attr('id')] = parseFloat($this.val());
+					obj[id] = $this.prop('checked');
 				} else {
-					obj[$this.attr('id')] = $this.val();
 					var value = $this.val();
 					if (id === 'userpw') {
-						value = encrypt(secret, settings[id]);
+						value = encrypt(secret, value);
 					}
-					obj[$this.attr('id')] = value;
-
+					obj[id] = value;
 				}
 			});
+
 			callback(obj);
 		}
 	</script>
