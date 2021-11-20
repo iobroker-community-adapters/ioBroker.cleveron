@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "cleveron",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "news": {
       "0.0.2": {
         "en": "'request' replaced by 'got', secret encryption added, reviewed accordingly 'development and coding best practices'",
