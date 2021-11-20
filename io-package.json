@@ -3,6 +3,18 @@
     "name": "cleveron",
     "version": "0.0.1",
     "news": {
+      "0.0.2": {
+        "en": "'request' replaced by 'got', secret encryption added, reviewed accordingly 'development and coding best practices'",
+        "de": "'request' durch 'got' ersetzt, geheime Verschlüsselung hinzugefügt, entsprechend überprüft 'Development and Coding Best Practices'",
+        "ru": "«запрос» заменен на «получено», добавлено секретное шифрование, рассмотрен соответствующий «передовой опыт разработки и кодирования»",
+        "pt": "'pedido' substituído por 'obtido', criptografia secreta adicionada, revisada de acordo com 'melhores práticas de desenvolvimento e codificação'",
+        "nl": "'verzoek' vervangen door 'gekregen', geheime codering toegevoegd, dienovereenkomstig herzien 'best practices voor ontwikkeling en codering'",
+        "fr": "« request » remplacé par « got », chiffrement secret ajouté, révisé en conséquence « meilleures pratiques de développement et de codage »",
+        "it": "\"richiesta\" sostituito da \"ottenuto\", aggiunta di crittografia segreta, esaminata di conseguenza \"migliori pratiche di sviluppo e codifica\"",
+        "es": "'solicitud' reemplazada por 'obtenido', cifrado secreto agregado, revisado en consecuencia 'mejores prácticas de desarrollo y codificación'",
+        "pl": "„żądanie” zastąpione przez „otrzymał”, dodano tajne szyfrowanie, odpowiednio zweryfikowane „najlepsze praktyki w zakresie rozwoju i kodowania”",
+        "zh-cn": "“请求”替换为“得到”，添加了秘密加密，相应地审查了“开发和编码最佳实践”"
+      },
       "0.0.1": {
         "en": "initial release",
         "de": "Erstveröffentlichung",
