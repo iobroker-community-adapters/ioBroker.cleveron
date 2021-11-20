@@ -27,9 +27,14 @@ Erhalte deine Daten aus der CLEVERON - API (<https://www.cleveron.ch>)
 
 ## Changelog
 
+### 0.0.3
+
+-   added folders, devices, channels & fixed bugs
+
+
 ### 0.0.2
 
-- 'request' replaced by 'got', secret encryption added, reviewed accordingly 'development and coding best practices'
+-   'request' replaced by 'got', secret encryption added, reviewed accordingly 'development and coding best practices'
 
 ### 0.0.1 First try
 

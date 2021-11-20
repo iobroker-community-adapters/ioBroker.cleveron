@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "cleveron",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "news": {
+      "0.0.3": {
+        "en": "added folders, devices, channels & fixed bugs",
+        "de": "Ordner, Geräte, Kanäle hinzugefügt und Fehler behoben",
+        "ru": "добавлены папки, устройства, каналы и исправлены ошибки",
+        "pt": "adicionadas pastas, dispositivos, canais e bugs corrigidos",
+        "nl": "mappen, apparaten, kanalen en bugs toegevoegd",
+        "fr": "dossiers, appareils, canaux ajoutés et bugs corrigés",
+        "it": "aggiunte cartelle, dispositivi, canali e bug corretti",
+        "es": "carpetas, dispositivos, canales y errores corregidos agregados",
+        "pl": "dodane foldery, urządzenia, kanały i naprawione błędy",
+        "zh-cn": "添加了文件夹、设备、频道和修复的错误"
+      },
       "0.0.2": {
         "en": "'request' replaced by 'got', secret encryption added, reviewed accordingly 'development and coding best practices'",
         "de": "'request' durch 'got' ersetzt, geheime Verschlüsselung hinzugefügt, entsprechend überprüft 'Development and Coding Best Practices'",
@@ -42,16 +54,16 @@
       "zh-cn": "克莱弗龙"
     },
     "desc": {
-      "en": "Erhalte deine Daten aus der CLEVERON - API",
-      "de": "Erhalte deine Daten aus der CLEVERON - API",
-      "ru": "Erhalte deine Daten aus der CLEVERON - API",
-      "pt": "Erhalte deine Daten aus der CLEVERON - API",
-      "nl": "Erhalte deine Daten aus der CLEVERON - API",
-      "fr": "Erhalte deine Daten aus der CLEVERON - API",
-      "it": "Erhalte deine Daten aus der CLEVERON - API",
-      "es": "Erhalte deine Daten aus der CLEVERON - API",
-      "pl": "Erhalte deine Daten aus der CLEVERON - API",
-      "zh-cn": "Erhalte deine Daten aus der CLEVERON - API"
+      "en": "get your data by the CLEVERON - API",
+      "de": "Hol dir deine Daten über die CLEVERON - API",
+      "ru": "получите ваши данные с помощью CLEVERON - API",
+      "pt": "obtenha seus dados pelo CLEVERON - API",
+      "nl": "haal uw gegevens op via de CLEVERON - API",
+      "fr": "récupérer vos données par le CLEVERON - API",
+      "it": "ottieni i tuoi dati da CLEVERON - API",
+      "es": "obtenga sus datos mediante CLEVERON - API",
+      "pl": "zdobądź swoje dane przez CLEVERON - API",
+      "zh-cn": "通过 CLEVERON - API 获取您的数据"
     },
     "authors": [
       "forelleblau <marceladam@gmx.ch>"

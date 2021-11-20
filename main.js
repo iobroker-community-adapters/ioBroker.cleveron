@@ -316,6 +316,16 @@ function setobjectsfirstrun(dataarray) {
   try {
     adapter.log.debug("Lege " + dataarray.length + " Gebäude an.");
     for (var sofb = 0; sofb < dataarray.length; sofb++) {
+
+      adapter.setObjectNotExists(dataarray[sofb]['homeName'], {
+        type: 'folder',
+        role: 'info.name',
+        common: {
+          name: "Gebäude"
+        },
+        native: {}
+      });
+
       adapter.log.debug("Lege Gebäude " + dataarray[sofb]['homeName'] + " an.");
       adapter.setObjectNotExists(dataarray[sofb]['homeName'] + ".objectId", {
         type: 'state',
@@ -348,6 +358,17 @@ function setobjectsfirstrun(dataarray) {
       adapter.log.debug("Lege " + dataarray[sofb]['Rooms'].length + " Räume im " + (sofb + 1) + "ten Gebäude an.");
       for (var sofr = 0; sofr < dataarray[sofb]['Rooms'].length; sofr++) {
         adapter.log.debug("Lege Raum " + dataarray[sofb]['Rooms'][sofr]['roomName'] + " im Gebäude " + dataarray[sofb]['homeName'] + " an.");
+
+        adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'], {
+          type: 'device',
+          role: 'info.name',
+          common: {
+            name: "Raum"
+          },
+          native: {}
+        });
+
+
         adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + ".objectId", {
           type: 'state',
           common: {
@@ -374,6 +395,16 @@ function setobjectsfirstrun(dataarray) {
         });
 
         for (var sofd = 0; sofd < dataarray[sofb]['Rooms'][sofr]['Devices'].length; sofd++) {
+          adapter.log.debug("Lege Gerät " + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + " im Raum " + dataarray[sofb]['Rooms'][sofr]['roomName'] + " im Gebäude " + dataarray[sofb]['homeName'] + " an.");
+          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'], {
+            type: 'channel',
+            role: 'info.name',
+            common: {
+              name: "Gerät"
+            },
+            native: {}
+          });
+
           adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".objectId", {
             type: 'state',
             common: {
