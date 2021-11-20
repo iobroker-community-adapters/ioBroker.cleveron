@@ -35,7 +35,14 @@ var testend;
 var pollingtime;
 
 
-
+function decrypt(key, value) {
+  let result = "";
+  for (let i = 0; i < value.length; ++i) {
+    result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+  }
+  adapter.log.debug("userpw decrypt ready");
+  return result;
+}
 
 
 function startAdapter(options) {
@@ -98,9 +105,21 @@ function startAdapter(options) {
   // is called when databases are connected and adapter received configuration.
   adapter.on('ready', function() {
     adapter.log.info('[START] Starting CLEVERON adapter');
-    adapter.setState('info.connection', true, true);
-    main();
 
+    adapter.log.debug("ready - Adapter: databases are connected and adapter received configuration");
+    adapter.log.silly("config.userpw verschlüsselt: " + adapter.config.userpw);
+
+    adapter.getForeignObject("system.config", (err, obj) => {
+      if (obj && obj.native && obj.native.secret) {
+        //noinspection JSUnresolvedVariable
+        adapter.config.userpw = decrypt(obj.native.secret, adapter.config.userpw);
+      } else {
+        //noinspection JSUnresolvedVariable
+        adapter.config.userpw = decrypt("Zgfr56gFe87jJOM", adapter.config.userpw);
+      };
+      adapter.setState('info.connection', true, true);
+      main();
+    });
   });
 
   return adapter;
