@@ -108,7 +108,7 @@
 					if (id === 'userpw') {
 						value = encrypt(secret, settings[id]);
 					}
-					obj[id] = value;
+					obj[$this.attr('id')] = value;
 
 				}
 			});
