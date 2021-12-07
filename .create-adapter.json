@@ -1,0 +1,43 @@
+{
+	"cli": true,
+	"target": "directory",
+	"adapterName": "cleveron",
+	"title": "CLEVERON",
+	"description": "Erhalte deine Daten aus der CLEVERON - API",
+	"keywords": [
+		"Cleveron",
+		"Heizung",
+		"CO2",
+		"Luftqualitaet"
+	],
+	"expert": "yes",
+	"features": [
+		"adapter"
+	],
+	"adminFeatures": [],
+	"type": "climate-control",
+	"startMode": "daemon",
+	"connectionType": "cloud",
+	"dataSource": "poll",
+	"connectionIndicator": "yes",
+	"language": "JavaScript",
+	"adminReact": "no",
+	"tools": [
+		"ESLint",
+		"type checking"
+	],
+	"releaseScript": "yes",
+	"devServer": "no",
+	"indentation": "Tab",
+	"quotes": "single",
+	"es6class": "yes",
+	"authorName": "forelleblau",
+	"authorGithub": "forelleblau",
+	"authorEmail": "marceladam@gmx.ch",
+	"gitRemoteProtocol": "HTTPS",
+	"gitCommit": "no",
+	"defaultBranch": "main",
+	"license": "MIT License",
+	"dependabot": "yes",
+	"creatorVersion": "2.0.1"
+}
