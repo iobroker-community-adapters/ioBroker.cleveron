@@ -33,8 +33,9 @@ let polling;
 var firstrun;
 var testend;
 var pollingtime;
+var requestcounter = 0;
 
-
+/*
 function decrypt(key, value) {
   let result = "";
   for (let i = 0; i < value.length; ++i) {
@@ -43,6 +44,7 @@ function decrypt(key, value) {
   adapter.log.debug("userpw decrypt ready");
   return result;
 }
+*/
 
 
 function startAdapter(options) {
@@ -57,8 +59,8 @@ function startAdapter(options) {
   adapter.on('unload', function(callback) {
     try {
       adapter.log.info('[END] Stopping CLEVERON adapter...');
-      clearTimeout(polling);
-      clearTimeout(setstatesstartup);
+      clearInterval(polling);
+      //clearTimeout(setstatesstartup);
       adapter.setState('info.connection', false, true);
       callback();
     } catch (e) {
@@ -67,13 +69,12 @@ function startAdapter(options) {
     }
   });
 
-  // is called if a subscribed object changes
+  /*
   adapter.on('objectChange', function(id, obj) {
     // Warning, obj can be null if it was deleted.
     adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
   });
 
-  // is called if a subscribed state changes
   adapter.on('stateChange', function(id, state) {
     // Warning, state can be null if it was deleted
     adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
@@ -90,7 +91,7 @@ function startAdapter(options) {
 
 
   // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-  /*adapter.on('message', function(obj) {
+  adapter.on('message', function(obj) {
     if (typeof obj === 'object' && obj.message) {
       if (obj.command === 'send') {
         // e.g. send email or pushover or whatever
@@ -101,6 +102,7 @@ function startAdapter(options) {
       }
     }
   });,
+
   */
 
   // is called when databases are connected and adapter received configuration.
@@ -108,24 +110,26 @@ function startAdapter(options) {
     adapter.log.info('[START] Starting CLEVERON adapter');
 
     adapter.log.debug("ready - Adapter: databases are connected and adapter received configuration");
-    adapter.log.debug("config.userpw verschlüsselt: " + adapter.config.userpw);
+    //adapter.log.debug("config.userpw verschlüsselt: " + adapter.config.userpw);
 
-    adapter.getForeignObject("system.config", (err, obj) => {
-      if (obj && obj.native && obj.native.secret) {
-        //noinspection JSUnresolvedVariable
-        adapter.config.userpw = decrypt(obj.native.secret, adapter.config.userpw);
-      } else {
-        //noinspection JSUnresolvedVariable
-        adapter.config.userpw = decrypt("Zgfr56gFe87jJOM", adapter.config.userpw);
-      };
-      adapter.setState('info.connection', true, true);
+    /*
+        adapter.getForeignObject("system.config", (err, obj) => {
+          if (obj && obj.native && obj.native.secret) {
+            //noinspection JSUnresolvedVariable
+            adapter.config.userpw = decrypt(obj.native.secret, adapter.config.userpw);
+          } else {
+            //noinspection JSUnresolvedVariable
+            adapter.config.userpw = decrypt("Zgfr56gFe87jJOM", adapter.config.userpw);
+          };
+    */
+    adapter.setState('info.connection', true, true);
 
-      adapter.log.debug("config.userpw unverschlüsselt: " + adapter.config.userpw);
-      main();
-    });
+    //adapter.log.debug("config.userpw unverschlüsselt: " + adapter.config.userpw);
+    main();
   });
+});
 
-  return adapter;
+return adapter;
 } // endStartAdapter
 
 
@@ -144,13 +148,10 @@ function main() {
     gettoken();
 
     if (!polling) {
-      polling = setTimeout(function repeat() { // poll states every [30] seconds
-        gettoken();
-        setTimeout(repeat, pollingtime);
-      }, pollingtime);
+      polling = setInterval(gettoken, pollingtime); // poll states every [30] seconds
     } // endIf
 
-    adapter.subscribeStates('*');
+    //    adapter.subscribeStates('*');
 
   } catch (e) {
     adapter.log.warn("Main connect error: " + e);
@@ -173,13 +174,24 @@ function gettoken() {
         getbuilding();
 
       } catch (error) {
-        adapter.log.warn("gettoken - got - error: " + error)
-        /*.response.statusCode);
-               if (error.response.statusCode == 500) {
-                 adapter.log.warn("gettoken - got - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
-               } else {
-                 adapter.log.warn("gettoken - got - Fehler: " + error + ", " + error.response.body);
-               }*/
+        adapter.log.warn("gettoken - got - error: " + error);
+
+        if (requestcounter > 4) {
+          adapter.log.warn('Mehrfach fehlerhafter gettoken, starte Adapter neu.')
+          restartAdapter();
+        } else if (requestcounter > 3) {
+          adapter.log.info('Mehrfacher Fehler beim gettoken: Statuscode:' + error + '. Führe gettoken in 90 Sekunden erneut aus.')
+          requestcounter++;
+          setTimeout(function() {
+            gettoken();
+          }, 90000);
+        } else {
+          adapter.log.info('Fehler beim gettoken: Statuscode:' + error + '. Führe gettoken in 10 Sekunden erneut aus.')
+          requestcounter++;
+          setTimeout(function() {
+            gettoken();
+          }, 10000);
+        }
       }
     })();
   } catch (e) {
@@ -218,6 +230,23 @@ function getbuilding() {
           adapter.log.warn("getbuilding - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
         } else {
           adapter.log.warn("getbuilding - Fehler: " + error + ", " + error.response.body);
+        }
+
+        if (requestcounter > 4) {
+          adapter.log.warn('Mehrfach fehlerhafter getbuilding, starte Adapter neu.')
+          restartAdapter();
+        } else if (requestcounter > 3) {
+          adapter.log.info('Mehrfacher Fehler beim getbuilding: Statuscode:' + error + '. Führe getbuilding in 90 Sekunden erneut aus.')
+          requestcounter++;
+          setTimeout(function() {
+            getbuilding();
+          }, 90000);
+        } else {
+          adapter.log.info('Fehler beim getbuilding: Statuscode:' + error + '. Führe getbuilding in 10 Sekunden erneut aus.')
+          requestcounter++;
+          setTimeout(function() {
+            getbuilding();
+          }, 10000);
         }
       }
     })();
@@ -260,6 +289,23 @@ function getrooms(building, bi) {
           adapter.log.warn("getrooms - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
         } else {
           adapter.log.warn("getrooms - Fehler: " + error + ", " + error.response.body);
+        }
+
+        if (requestcounter > 4) {
+          adapter.log.warn('Mehrfach fehlerhafter getrooms, starte Adapter neu.')
+          restartAdapter();
+        } else if (requestcounter > 3) {
+          adapter.log.info('Mehrfacher Fehler beim getrooms: Statuscode:' + error + '. Führe getrooms in 90 Sekunden erneut aus.')
+          requestcounter++;
+          setTimeout(function() {
+            getrooms(building, bi);
+          }, 90000);
+        } else {
+          adapter.log.info('Fehler beim getrooms: Statuscode:' + error + '. Führe getrooms in 10 Sekunden erneut aus.')
+          requestcounter++;
+          setTimeout(function() {
+            getrooms(building, bi);
+          }, 10000);
         }
       }
     })();
@@ -305,6 +351,23 @@ function getdevices(room, ri, building) {
         } else {
           adapter.log.warn("getdevices - Fehler: " + error + ", " + error.response.body);
         }
+
+        if (requestcounter > 4) {
+          adapter.log.warn('Mehrfach fehlerhafter getdevices, starte Adapter neu.')
+          restartAdapter();
+        } else if (requestcounter > 3) {
+          adapter.log.info('Mehrfacher Fehler beim getdevices: Statuscode:' + error + '. Führe getdevices in 90 Sekunden erneut aus.')
+          requestcounter++;
+          setTimeout(function() {
+            getdevices(room, ri, building);
+          }, 90000);
+        } else {
+          adapter.log.info('Fehler beim getdevices: Statuscode:' + error + '. Führe getdevices in 10 Sekunden erneut aus.')
+          requestcounter++;
+          setTimeout(function() {
+            getdevices(room, ri, building);
+          }, 10000);
+        }
       }
     })();
   } catch (e) {
@@ -312,12 +375,12 @@ function getdevices(room, ri, building) {
   }
 } //end getdevices
 
-function setobjectsfirstrun(dataarray) {
+async function setobjectsfirstrun(dataarray) {
   try {
     adapter.log.debug("Lege " + dataarray.length + " Gebäude an.");
     for (var sofb = 0; sofb < dataarray.length; sofb++) {
 
-      adapter.setObjectNotExists(dataarray[sofb]['homeName'], {
+      await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'], {
         type: 'folder',
         role: 'info.name',
         common: {
@@ -327,20 +390,20 @@ function setobjectsfirstrun(dataarray) {
       });
 
       adapter.log.debug("Lege Gebäude " + dataarray[sofb]['homeName'] + " an.");
-      adapter.setObjectNotExists(dataarray[sofb]['homeName'] + ".objectId", {
+      await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + ".objectId", {
         type: 'state',
         common: {
           name: 'ObjektID Gebäude',
           desc: 'Objekt-ID alphanummerisch, eindeutig Gebäude',
           type: 'string',
-          role: "info.serial",
+          role: "state",
           read: true,
           write: false
         },
         native: {}
       });
 
-      adapter.setObjectNotExists(dataarray[sofb]['homeName'] + ".city", {
+      await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + ".city", {
         type: 'state',
         common: {
           name: 'Standort',
@@ -359,7 +422,7 @@ function setobjectsfirstrun(dataarray) {
       for (var sofr = 0; sofr < dataarray[sofb]['Rooms'].length; sofr++) {
         adapter.log.debug("Lege Raum " + dataarray[sofb]['Rooms'][sofr]['roomName'] + " im Gebäude " + dataarray[sofb]['homeName'] + " an.");
 
-        adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'], {
+        await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'], {
           type: 'device',
           role: 'info.name',
           common: {
@@ -369,7 +432,7 @@ function setobjectsfirstrun(dataarray) {
         });
 
 
-        adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + ".objectId", {
+        await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + ".objectId", {
           type: 'state',
           common: {
             name: 'ObjektID Raum',
@@ -381,7 +444,7 @@ function setobjectsfirstrun(dataarray) {
           },
           native: {}
         });
-        adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + ".floor", {
+        await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + ".floor", {
           type: 'state',
           common: {
             name: 'Etage',
@@ -396,7 +459,7 @@ function setobjectsfirstrun(dataarray) {
 
         for (var sofd = 0; sofd < dataarray[sofb]['Rooms'][sofr]['Devices'].length; sofd++) {
           adapter.log.debug("Lege Gerät " + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + " im Raum " + dataarray[sofb]['Rooms'][sofr]['roomName'] + " im Gebäude " + dataarray[sofb]['homeName'] + " an.");
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'], {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'], {
             type: 'channel',
             role: 'info.name',
             common: {
@@ -405,7 +468,7 @@ function setobjectsfirstrun(dataarray) {
             native: {}
           });
 
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".objectId", {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".objectId", {
             type: 'state',
             common: {
               name: 'ObjektID Gerät',
@@ -417,7 +480,7 @@ function setobjectsfirstrun(dataarray) {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".macAddress", {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".macAddress", {
             type: 'state',
             common: {
               name: 'MAC-Adresse Gerät',
@@ -429,7 +492,7 @@ function setobjectsfirstrun(dataarray) {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".batteryVoltage", {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".batteryVoltage", {
             type: 'state',
             common: {
               name: 'Batteriespannung',
@@ -442,20 +505,20 @@ function setobjectsfirstrun(dataarray) {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".co2", {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".co2", {
             type: 'state',
             common: {
               name: 'Messwert CO2',
               desc: 'CO2 - Messwert in ppm',
               type: 'number',
-              role: "value.CO2",
+              role: "value",
               read: true,
               write: false,
               unit: "ppm"
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".lastMeasurement", {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".lastMeasurement", {
             type: 'state',
             common: {
               name: 'Letzte Messung',
@@ -467,7 +530,7 @@ function setobjectsfirstrun(dataarray) {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".temperature", {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".temperature", {
             type: 'state',
             common: {
               name: 'Temperatur',
@@ -480,7 +543,7 @@ function setobjectsfirstrun(dataarray) {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".humidity", {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".humidity", {
             type: 'state',
             common: {
               name: 'Feuchtigkeit',
@@ -493,19 +556,19 @@ function setobjectsfirstrun(dataarray) {
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".wifiStrength", {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".wifiStrength", {
             type: 'state',
             common: {
               name: 'Signalstärke WIFI',
               desc: 'Sträke des WLAN - Signals',
               type: 'number',
-              role: "value.wifi",
+              role: "state",
               read: true,
               write: false
             },
             native: {}
           });
-          adapter.setObjectNotExists(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".deviceType", {
+          await adapter.setObjectNotExistsAsync(dataarray[sofb]['homeName'] + "." + dataarray[sofb]['Rooms'][sofr]['roomName'] + "." + dataarray[sofb]['Rooms'][sofr]['Devices'][sofd]['serialNumber'] + ".deviceType", {
             type: 'state',
             common: {
               name: 'Gerätetyp',
@@ -518,7 +581,7 @@ function setobjectsfirstrun(dataarray) {
             native: {}
           });
 
-          setTimeout(setstatesstartup, 2000);
+          //setTimeout(setstatesstartup, 2000);
         } //end rotation devices
       } //end rotation rooms
     } //end rotation Buildings

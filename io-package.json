@@ -97,6 +97,10 @@
     "userpw": "password",
     "poll": 10
   },
+  "encryptedNative": [
+    "user",
+    "userpw"
+  ],
   "objects": [],
   "instanceObjects": [{
       "_id": "info",
