@@ -127,9 +127,9 @@ function startAdapter(options) {
     //adapter.log.debug("config.userpw unverschlüsselt: " + adapter.config.userpw);
     main();
   });
-});
+  //});
 
-return adapter;
+  return adapter;
 } // endStartAdapter
 
 
