@@ -98,8 +98,6 @@
     "poll": 10
   },
 
-  "protectedNative": ["userpw"],
-
   "objects": [],
   "instanceObjects": [{
       "_id": "info",

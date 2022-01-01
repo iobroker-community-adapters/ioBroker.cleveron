@@ -35,7 +35,7 @@ var testend;
 var pollingtime;
 var requestcounter = 0;
 
-/*
+
 function decrypt(key, value) {
   let result = "";
   for (let i = 0; i < value.length; ++i) {
@@ -44,7 +44,7 @@ function decrypt(key, value) {
   adapter.log.debug("userpw decrypt ready");
   return result;
 }
-*/
+
 
 
 function startAdapter(options) {
@@ -110,24 +110,24 @@ function startAdapter(options) {
     adapter.log.info('[START] Starting CLEVERON adapter');
 
     adapter.log.debug("ready - Adapter: databases are connected and adapter received configuration");
-    //adapter.log.debug("config.userpw verschlüsselt: " + adapter.config.userpw);
+    adapter.log.debug("config.userpw verschlüsselt: " + adapter.config.userpw);
 
-    /*
-        adapter.getForeignObject("system.config", (err, obj) => {
-          if (obj && obj.native && obj.native.secret) {
-            //noinspection JSUnresolvedVariable
-            adapter.config.userpw = decrypt(obj.native.secret, adapter.config.userpw);
-          } else {
-            //noinspection JSUnresolvedVariable
-            adapter.config.userpw = decrypt("Zgfr56gFe87jJOM", adapter.config.userpw);
-          };
-    */
-    adapter.setState('info.connection', true, true);
 
-    //adapter.log.debug("config.userpw unverschlüsselt: " + adapter.config.userpw);
-    main();
+    adapter.getForeignObject("system.config", (err, obj) => {
+      if (obj && obj.native && obj.native.secret) {
+        //noinspection JSUnresolvedVariable
+        adapter.config.userpw = decrypt(obj.native.secret, adapter.config.userpw);
+      } else {
+        //noinspection JSUnresolvedVariable
+        adapter.config.userpw = decrypt("Zgfr56gFe87jJOM", adapter.config.userpw);
+      };
+
+      adapter.setState('info.connection', true, true);
+
+      adapter.log.debug("config.userpw unverschlüsselt: " + adapter.config.userpw);
+      main();
+    });
   });
-  //});
 
   return adapter;
 } // endStartAdapter
