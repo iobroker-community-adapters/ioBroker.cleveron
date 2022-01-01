@@ -70,40 +70,40 @@ function startAdapter(options) {
   });
 
   /*
-  adapter.on('objectChange', function(id, obj) {
-    // Warning, obj can be null if it was deleted.
-    adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
-  });
+    adapter.on('objectChange', function(id, obj) {
+      // Warning, obj can be null if it was deleted.
+      adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
+    });
 
-  adapter.on('stateChange', function(id, state) {
-    // Warning, state can be null if it was deleted
-    adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
+    adapter.on('stateChange', function(id, state) {
+      // Warning, state can be null if it was deleted
+      adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
+      // you can use the ack flag to detect if it is status (true) or command (false)
+
+      if (state && !state.ack) {
+        adapter.log.info('ack is not set!');
+      }
+
+    });
+
     // you can use the ack flag to detect if it is status (true) or command (false)
 
-    if (state && !state.ack) {
-      adapter.log.info('ack is not set!');
-    }
-
-  });
-
-  // you can use the ack flag to detect if it is status (true) or command (false)
 
 
+    // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
+    adapter.on('message', function(obj) {
+      if (typeof obj === 'object' && obj.message) {
+        if (obj.command === 'send') {
+          // e.g. send email or pushover or whatever
+          adapter.log('send command');
 
-  // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-  adapter.on('message', function(obj) {
-    if (typeof obj === 'object' && obj.message) {
-      if (obj.command === 'send') {
-        // e.g. send email or pushover or whatever
-        adapter.log('send command');
-
-        // Send response in callback if required
-        if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+          // Send response in callback if required
+          if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+        }
       }
-    }
-  });,
+    });,
 
-  */
+    */
 
   // is called when databases are connected and adapter received configuration.
   adapter.on('ready', function() {
@@ -151,7 +151,7 @@ function main() {
       polling = setInterval(gettoken, pollingtime); // poll states every [30] seconds
     } // endIf
 
-    //    adapter.subscribeStates('*');
+    //adapter.subscribeStates('*');
 
   } catch (e) {
     adapter.log.warn("Main connect error: " + e);
@@ -587,7 +587,7 @@ async function setobjectsfirstrun(dataarray) {
     } //end rotation Buildings
 
 
-
+    setstatesstartup();
 
 
 
