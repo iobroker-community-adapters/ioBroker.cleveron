@@ -31,7 +31,6 @@ Erhalte deine Daten aus der CLEVERON - API (<https://www.cleveron.ch>)
 
 -   added folders, devices, channels & fixed bugs
 
-
 ### 0.0.2
 
 -   'request' replaced by 'got', secret encryption added, reviewed accordingly 'development and coding best practices'
@@ -44,7 +43,7 @@ Erhalte deine Daten aus der CLEVERON - API (<https://www.cleveron.ch>)
 
 MIT License
 
-Copyright (c) 2021 forelleblau <mailto:marceladam@gmx.ch>
+Copyright (c) 2022 forelleblau <mailto:marceladam@gmx.ch>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
