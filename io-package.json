@@ -97,7 +97,7 @@
     "userpw": "password",
     "poll": 10
   },
-  "encryptedNative": [
+  "protectedNative": [
     "user",
     "userpw"
   ],
