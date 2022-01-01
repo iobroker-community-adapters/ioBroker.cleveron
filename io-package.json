@@ -98,7 +98,6 @@
     "poll": 10
   },
   "protectedNative": [
-    "user",
     "userpw"
   ],
   "objects": [],
