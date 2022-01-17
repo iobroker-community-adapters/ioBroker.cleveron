@@ -138,7 +138,7 @@ function main() {
 } //endMain
 
 function gettoken() {
-  adapter.log.debug("Tokenurl= " + tokenurl);
+  //adapter.log.debug("Tokenurl= " + tokenurl);
   try {
     (async () => {
       try {

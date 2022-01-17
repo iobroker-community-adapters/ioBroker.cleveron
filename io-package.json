@@ -107,9 +107,7 @@
   "encryptedNative": [
     "userpw"
   ],
-  "protectedNative": [
-    "userpw"
-  ],
+
   "native": {
     "user": "user",
     "userpw": "password",
