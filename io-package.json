@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "cleveron",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "news": {
+      "0.0.4": {
+        "en": "changed ecrypting to 'encryptedNative'",
+        "de": "Verschlüsselung auf 'encryptedNative' geändert",
+        "ru": "изменено шифрование на «encryptedNative»",
+        "pt": "mudou a criptografia para 'encryptedNative'",
+        "nl": "ecrypting gewijzigd in 'encryptedNative'",
+        "fr": "changé le cryptage en 'encryptedNative'",
+        "it": "crittografia modificata in 'encryptedNative'",
+        "es": "cambió el cifrado a 'encryptedNative'",
+        "pl": "zmieniono szyfrowanie na „encryptedNative”",
+        "zh-cn": "将加密更改为 'encryptedNative'"
+      },
       "0.0.3": {
         "en": "added folders, devices, channels & fixed bugs",
         "de": "Ordner, Geräte, Kanäle hinzugefügt und Fehler behoben",

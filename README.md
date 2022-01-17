@@ -27,6 +27,10 @@ Erhalte deine Daten aus der CLEVERON - API (<https://www.cleveron.ch>)
 
 ## Changelog
 
+### v0.0.4
+
+-   changed ecrypting to 'encryptedNative'
+
 ### 0.0.3
 
 -   added folders, devices, channels & fixed bugs

@@ -1,6 +1,6 @@
 {
   "name": "iobroker.cleveron",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Erhalte deine Daten aus der CLEVERON - API",
   "author": {
     "name": "forelleblau",
