@@ -92,6 +92,12 @@
       "js-controller": ">=3.1.0"
     }]
   },
+  "encryptedNative": [
+    "userpw"
+  ],
+  "protectedNative": [
+    "userpw"
+  ],
   "native": {
     "user": "user",
     "userpw": "password",
