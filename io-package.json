@@ -109,8 +109,8 @@
   ],
 
   "native": {
-    "user": "user",
-    "userpw": "password",
+    "user": "",
+    "userpw": "",
     "poll": 10
   },
 
