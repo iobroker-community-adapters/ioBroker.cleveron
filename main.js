@@ -121,6 +121,7 @@ function main() {
 
   const loginpath = "login?username=" + user + "&password=" + pass;
   tokenurl = server + apipath + loginpath;
+  //adapter.log.debug('Tokenurl: ' + tokenurl);
 
   try {
     firstrun = true;
