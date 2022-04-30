@@ -7,7 +7,8 @@
 'use strict';
 
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
-const got = require('got');
+//const got = require('got');
+const axios = require('axios');
 
 let adapter;
 
@@ -143,7 +144,7 @@ function gettoken() {
   try {
     (async () => {
       try {
-        const response = await got(tokenurl);
+        const response = await axios(tokenurl);
         adapter.log.debug('Status-Code: ' + response.statusCode);
         adapter.log.debug('Header: ' + JSON.stringify(response.headers));
         adapter.log.debug('Response.body= ' + response.body);
@@ -154,7 +155,7 @@ function gettoken() {
         getbuilding();
 
       } catch (error) {
-        adapter.log.warn("gettoken - got - error: " + error);
+        adapter.log.warn("gettoken - axios - error: " + error);
 
         if (requestcounter > 4) {
           adapter.log.warn('Mehrfach fehlerhafter gettoken, starte Adapter neu.')
@@ -186,7 +187,7 @@ function getbuilding() {
     adapter.log.debug("Options: " + options);
     (async () => {
       try {
-        const response = await got(options);
+        const response = await axios(options);
         adapter.log.debug('Status-Code: ' + response.statusCode);
         adapter.log.debug('Header: ' + JSON.stringify(response.headers));
         adapter.log.debug('Response.body= ' + response.body);
@@ -242,7 +243,7 @@ function getrooms(building, bi) {
     adapter.log.debug("Options: " + options);
     (async () => {
       try {
-        const response = await got(options);
+        const response = await axios(options);
         adapter.log.debug('Status-Code: ' + response.statusCode);
         adapter.log.debug('Header: ' + JSON.stringify(response.headers));
         adapter.log.debug('Response.body= ' + response.body);
@@ -301,7 +302,7 @@ function getdevices(room, ri, building) {
     adapter.log.debug("Options getdevices: " + options);
     (async () => {
       try {
-        const response = await got(options);
+        const response = await axios(options);
         adapter.log.debug('Status-Code: ' + response.statusCode);
         adapter.log.debug('Header: ' + JSON.stringify(response.headers));
         adapter.log.debug('Response.body= ' + response.body);
