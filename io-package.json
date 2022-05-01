@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "cleveron",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "news": {
+      "0.0.5": {
+        "en": "introduced axios",
+        "de": "Axios eingeführt",
+        "ru": "представил аксиомы",
+        "pt": "axios introduzidos",
+        "nl": "introduceerde axios",
+        "fr": "axios introduits",
+        "it": "assio introdotto",
+        "es": "introdujo axios",
+        "pl": "wprowadzony aksjos",
+        "zh-cn": "介绍了axios"
+      },
       "0.0.4": {
         "en": "changed ecrypting to 'encryptedNative'",
         "de": "Verschlüsselung auf 'encryptedNative' geändert",

@@ -7,7 +7,6 @@
 'use strict';
 
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
-//const got = require('got');
 const axios = require('axios');
 
 let adapter;
@@ -140,15 +139,15 @@ function main() {
 } //endMain
 
 function gettoken() {
-  //adapter.log.debug("Tokenurl= " + tokenurl);
+  adapter.log.debug("Tokenurl= " + tokenurl);
   try {
     (async () => {
       try {
-        const response = await axios(tokenurl);
-        adapter.log.debug('Status-Code: ' + response.statusCode);
+        const response = await axios(`${tokenurl}`);
+        adapter.log.debug('Status-Code: ' + response.status);
         adapter.log.debug('Header: ' + JSON.stringify(response.headers));
-        adapter.log.debug('Response.body= ' + response.body);
-        var info = JSON.parse(response.body); // info ist ein Objekt
+        adapter.log.debug('Response.body= ' + JSON.stringify(response.data));
+        var info = response.data; // info ist ein Objekt
         adapter.log.debug("info: " + JSON.stringify(info));
         adapter.log.debug('SessionToken= ' + info['sessionToken']);
         sessiontoken = info['sessionToken'].toString();
@@ -187,11 +186,11 @@ function getbuilding() {
     adapter.log.debug("Options: " + options);
     (async () => {
       try {
-        const response = await axios(options);
-        adapter.log.debug('Status-Code: ' + response.statusCode);
+        const response = await axios(`${options}`);
+        adapter.log.debug('Status-Code: ' + response.status);
         adapter.log.debug('Header: ' + JSON.stringify(response.headers));
-        adapter.log.debug('Response.body= ' + response.body);
-        var infob = JSON.parse(response.body); // info ist ein Objekt
+        adapter.log.debug('Response.body= ' + JSON.stringify(response.data));
+        var infob = response.data; // info ist ein Objekt
         adapter.log.debug("infob: " + JSON.stringify(infob));
         for (let ib = 0; ib < infob.length; ib++) {
           adapter.log.debug(JSON.stringify(infob[ib]));
@@ -206,11 +205,11 @@ function getbuilding() {
           getrooms(buildingid[bi], bi)
         }
       } catch (error) {
-        adapter.log.warn("Error.Code: " + error.response.statusCode);
-        if (error.response.statusCode == 500) {
-          adapter.log.warn("getbuilding - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
+        adapter.log.warn("Error.Code: " + error.response.status);
+        if (error.response.status == 500) {
+          adapter.log.warn("getbuilding - Fehler: " + error + ", " + JSON.parse(error.response.data).message);
         } else {
-          adapter.log.warn("getbuilding - Fehler: " + error + ", " + error.response.body);
+          adapter.log.warn("getbuilding - Fehler: " + error + ", " + error.response.data);
         }
 
         if (requestcounter > 4) {
@@ -244,10 +243,10 @@ function getrooms(building, bi) {
     (async () => {
       try {
         const response = await axios(options);
-        adapter.log.debug('Status-Code: ' + response.statusCode);
+        adapter.log.debug('Status-Code: ' + response.status);
         adapter.log.debug('Header: ' + JSON.stringify(response.headers));
-        adapter.log.debug('Response.body= ' + response.body);
-        var infor = JSON.parse(response.body); // info ist ein Objekt
+        adapter.log.debug('Response.body= ' + JSON.stringify(response.data));
+        var infor = response.data; // info ist ein Objekt
         adapter.log.debug("infor: " + JSON.stringify(infor));
         var rooms = new Array()
         for (let ir = 0; ir < infor.length; ir++) {
@@ -265,11 +264,11 @@ function getrooms(building, bi) {
           getdevices(rooms[ri], ri, building);
         }
       } catch (error) {
-        adapter.log.warn("Error.Code: " + error.response.statusCode);
-        if (error.response.statusCode == 500) {
-          adapter.log.warn("getrooms - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
+        adapter.log.warn("Error.Code: " + error.response.status);
+        if (error.response.status == 500) {
+          adapter.log.warn("getrooms - Fehler: " + error + ", " + JSON.parse(error.response.data).message);
         } else {
-          adapter.log.warn("getrooms - Fehler: " + error + ", " + error.response.body);
+          adapter.log.warn("getrooms - Fehler: " + error + ", " + error.response.data);
         }
 
         if (requestcounter > 4) {
@@ -303,10 +302,10 @@ function getdevices(room, ri, building) {
     (async () => {
       try {
         const response = await axios(options);
-        adapter.log.debug('Status-Code: ' + response.statusCode);
+        adapter.log.debug('Status-Code: ' + response.status);
         adapter.log.debug('Header: ' + JSON.stringify(response.headers));
-        adapter.log.debug('Response.body= ' + response.body);
-        var infod = JSON.parse(response.body); // info ist ein Objekt
+        adapter.log.debug('Response.body= ' + JSON.stringify(response.data));
+        var infod = response.data; // info ist ein Objekt
         adapter.log.debug("infod: " + JSON.stringify(infod));
         for (let id = 0; id < infod.length; id++) {
           adapter.log.debug(infod[id]['objectId']);
@@ -326,11 +325,11 @@ function getdevices(room, ri, building) {
           }
         }
       } catch (error) {
-        adapter.log.warn("Error.Code: " + error.response.statusCode);
-        if (error.response.statusCode == 500) {
-          adapter.log.warn("getdevices - Fehler: " + error + ", " + JSON.parse(error.response.body).message);
+        adapter.log.warn("Error.Code: " + error.response.status);
+        if (error.response.status == 500) {
+          adapter.log.warn("getdevices - Fehler: " + error + ", " + JSON.parse(error.response.data).message);
         } else {
-          adapter.log.warn("getdevices - Fehler: " + error + ", " + error.response.body);
+          adapter.log.warn("getdevices - Fehler: " + error + ", " + error.response.data);
         }
 
         if (requestcounter > 4) {
