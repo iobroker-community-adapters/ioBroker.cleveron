@@ -4,162 +4,161 @@
     "version": "0.0.6",
     "news": {
       "0.0.6": {
-        "dependencies updated": {
-          "en": "dependencies updated",
-          "de": "aktualisierte dependencies",
-          "ru": "зависимости обновлены",
-          "pt": "dependências atualizadas",
-          "nl": "afhankelijkheid geüpdateerd",
-          "fr": "dépendances mises à jour",
-          "it": "dipendenze aggiornate",
-          "es": "dependencias actualizadas",
-          "pl": "aktualizacja",
-          "zh-cn": "b. 更新的依赖"
-        },
-        "0.0.5": {
-          "en": "introduced axios",
-          "de": "Axios eingeführt",
-          "ru": "представил аксиомы",
-          "pt": "axios introduzidos",
-          "nl": "introduceerde axios",
-          "fr": "axios introduits",
-          "it": "assio introdotto",
-          "es": "introdujo axios",
-          "pl": "wprowadzony aksjos",
-          "zh-cn": "介绍了axios"
-        },
-        "0.0.4": {
-          "en": "changed ecrypting to 'encryptedNative'",
-          "de": "Verschlüsselung auf 'encryptedNative' geändert",
-          "ru": "изменено шифрование на «encryptedNative»",
-          "pt": "mudou a criptografia para 'encryptedNative'",
-          "nl": "ecrypting gewijzigd in 'encryptedNative'",
-          "fr": "changé le cryptage en 'encryptedNative'",
-          "it": "crittografia modificata in 'encryptedNative'",
-          "es": "cambió el cifrado a 'encryptedNative'",
-          "pl": "zmieniono szyfrowanie na „encryptedNative”",
-          "zh-cn": "将加密更改为 'encryptedNative'"
-        },
-        "0.0.3": {
-          "en": "added folders, devices, channels & fixed bugs",
-          "de": "Ordner, Geräte, Kanäle hinzugefügt und Fehler behoben",
-          "ru": "добавлены папки, устройства, каналы и исправлены ошибки",
-          "pt": "adicionadas pastas, dispositivos, canais e bugs corrigidos",
-          "nl": "mappen, apparaten, kanalen en bugs toegevoegd",
-          "fr": "dossiers, appareils, canaux ajoutés et bugs corrigés",
-          "it": "aggiunte cartelle, dispositivi, canali e bug corretti",
-          "es": "carpetas, dispositivos, canales y errores corregidos agregados",
-          "pl": "dodane foldery, urządzenia, kanały i naprawione błędy",
-          "zh-cn": "添加了文件夹、设备、频道和修复的错误"
-        },
-        "0.0.2": {
-          "en": "'request' replaced by 'got', secret encryption added, reviewed accordingly 'development and coding best practices'",
-          "de": "'request' durch 'got' ersetzt, geheime Verschlüsselung hinzugefügt, entsprechend überprüft 'Development and Coding Best Practices'",
-          "ru": "«запрос» заменен на «получено», добавлено секретное шифрование, рассмотрен соответствующий «передовой опыт разработки и кодирования»",
-          "pt": "'pedido' substituído por 'obtido', criptografia secreta adicionada, revisada de acordo com 'melhores práticas de desenvolvimento e codificação'",
-          "nl": "'verzoek' vervangen door 'gekregen', geheime codering toegevoegd, dienovereenkomstig herzien 'best practices voor ontwikkeling en codering'",
-          "fr": "« request » remplacé par « got », chiffrement secret ajouté, révisé en conséquence « meilleures pratiques de développement et de codage »",
-          "it": "\"richiesta\" sostituito da \"ottenuto\", aggiunta di crittografia segreta, esaminata di conseguenza \"migliori pratiche di sviluppo e codifica\"",
-          "es": "'solicitud' reemplazada por 'obtenido', cifrado secreto agregado, revisado en consecuencia 'mejores prácticas de desarrollo y codificación'",
-          "pl": "„żądanie” zastąpione przez „otrzymał”, dodano tajne szyfrowanie, odpowiednio zweryfikowane „najlepsze praktyki w zakresie rozwoju i kodowania”",
-          "zh-cn": "“请求”替换为“得到”，添加了秘密加密，相应地审查了“开发和编码最佳实践”"
-        },
-        "0.0.1": {
-          "en": "initial release",
-          "de": "Erstveröffentlichung",
-          "ru": "Начальная версия",
-          "pt": "lançamento inicial",
-          "nl": "Eerste uitgave",
-          "fr": "Première version",
-          "it": "Versione iniziale",
-          "es": "Versión inicial",
-          "pl": "Pierwsze wydanie",
-          "zh-cn": "首次出版"
-        }
+        "en": "dependencies updated",
+        "de": "aktualisierte dependencies",
+        "ru": "зависимости обновлены",
+        "pt": "dependências atualizadas",
+        "nl": "afhankelijkheid geüpdateerd",
+        "fr": "dépendances mises à jour",
+        "it": "dipendenze aggiornate",
+        "es": "dependencias actualizadas",
+        "pl": "aktualizacja",
+        "zh-cn": "b. 更新的依赖"
       },
-      "title": "CLEVERON",
-      "titleLang": {
-        "en": "CLEVERON",
-        "de": "CLEVERON",
-        "ru": "КЛЕВЕРОН",
-        "pt": "CLEVERON",
-        "nl": "CLEVERON",
-        "fr": "CLEVERON",
-        "it": "CLEVERON",
-        "es": "CLEVERON",
-        "pl": "CLEVERON",
-        "zh-cn": "克莱弗龙"
+      "0.0.5": {
+        "en": "introduced axios",
+        "de": "Axios eingeführt",
+        "ru": "представил аксиомы",
+        "pt": "axios introduzidos",
+        "nl": "introduceerde axios",
+        "fr": "axios introduits",
+        "it": "assio introdotto",
+        "es": "introdujo axios",
+        "pl": "wprowadzony aksjos",
+        "zh-cn": "介绍了axios"
       },
-      "desc": {
-        "en": "get your data by the CLEVERON - API",
-        "de": "Hol dir deine Daten über die CLEVERON - API",
-        "ru": "получите ваши данные с помощью CLEVERON - API",
-        "pt": "obtenha seus dados pelo CLEVERON - API",
-        "nl": "haal uw gegevens op via de CLEVERON - API",
-        "fr": "récupérer vos données par le CLEVERON - API",
-        "it": "ottieni i tuoi dati da CLEVERON - API",
-        "es": "obtenga sus datos mediante CLEVERON - API",
-        "pl": "zdobądź swoje dane przez CLEVERON - API",
-        "zh-cn": "通过 CLEVERON - API 获取您的数据"
+      "0.0.4": {
+        "en": "changed ecrypting to 'encryptedNative'",
+        "de": "Verschlüsselung auf 'encryptedNative' geändert",
+        "ru": "изменено шифрование на «encryptedNative»",
+        "pt": "mudou a criptografia para 'encryptedNative'",
+        "nl": "ecrypting gewijzigd in 'encryptedNative'",
+        "fr": "changé le cryptage en 'encryptedNative'",
+        "it": "crittografia modificata in 'encryptedNative'",
+        "es": "cambió el cifrado a 'encryptedNative'",
+        "pl": "zmieniono szyfrowanie na „encryptedNative”",
+        "zh-cn": "将加密更改为 'encryptedNative'"
       },
-      "authors": [
-        "forelleblau <marceladam@gmx.ch>"
-      ],
-      "keywords": [
-        "Cleveron",
-        "Heizung",
-        "CO2",
-        "Luftqualitaet"
-      ],
-      "license": "MIT",
-      "platform": "Javascript/Node.js",
-      "main": "main.js",
-      "icon": "cleveron.png",
-      "enabled": true,
-      "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.cleveron/main/admin/cleveron.png",
-      "readme": "https://github.com/iobroker-community-adapters/ioBroker.cleveron/blob/main/README.md",
-      "loglevel": "info",
-      "mode": "daemon",
-      "type": "climate-control",
-      "compact": true,
-      "connectionType": "cloud",
-      "dataSource": "poll",
-      "materialize": true,
-      "dependencies": [{
-        "js-controller": ">=3.1.0"
-      }]
-    },
-    "encryptedNative": [
-      "userpw"
-    ],
-
-    "native": {
-      "user": "",
-      "userpw": "",
-      "poll": 10
-    },
-
-    "objects": [],
-    "instanceObjects": [{
-        "_id": "info",
-        "type": "channel",
-        "common": {
-          "name": "Information"
-        },
-        "native": {}
+      "0.0.3": {
+        "en": "added folders, devices, channels & fixed bugs",
+        "de": "Ordner, Geräte, Kanäle hinzugefügt und Fehler behoben",
+        "ru": "добавлены папки, устройства, каналы и исправлены ошибки",
+        "pt": "adicionadas pastas, dispositivos, canais e bugs corrigidos",
+        "nl": "mappen, apparaten, kanalen en bugs toegevoegd",
+        "fr": "dossiers, appareils, canaux ajoutés et bugs corrigés",
+        "it": "aggiunte cartelle, dispositivi, canali e bug corretti",
+        "es": "carpetas, dispositivos, canales y errores corregidos agregados",
+        "pl": "dodane foldery, urządzenia, kanały i naprawione błędy",
+        "zh-cn": "添加了文件夹、设备、频道和修复的错误"
       },
-      {
-        "_id": "info.connection",
-        "type": "state",
-        "common": {
-          "role": "indicator.connected",
-          "name": "Device or service connected",
-          "type": "boolean",
-          "read": true,
-          "write": false,
-          "def": false
-        },
-        "native": {}
+      "0.0.2": {
+        "en": "'request' replaced by 'got', secret encryption added, reviewed accordingly 'development and coding best practices'",
+        "de": "'request' durch 'got' ersetzt, geheime Verschlüsselung hinzugefügt, entsprechend überprüft 'Development and Coding Best Practices'",
+        "ru": "«запрос» заменен на «получено», добавлено секретное шифрование, рассмотрен соответствующий «передовой опыт разработки и кодирования»",
+        "pt": "'pedido' substituído por 'obtido', criptografia secreta adicionada, revisada de acordo com 'melhores práticas de desenvolvimento e codificação'",
+        "nl": "'verzoek' vervangen door 'gekregen', geheime codering toegevoegd, dienovereenkomstig herzien 'best practices voor ontwikkeling en codering'",
+        "fr": "« request » remplacé par « got », chiffrement secret ajouté, révisé en conséquence « meilleures pratiques de développement et de codage »",
+        "it": "\"richiesta\" sostituito da \"ottenuto\", aggiunta di crittografia segreta, esaminata di conseguenza \"migliori pratiche di sviluppo e codifica\"",
+        "es": "'solicitud' reemplazada por 'obtenido', cifrado secreto agregado, revisado en consecuencia 'mejores prácticas de desarrollo y codificación'",
+        "pl": "„żądanie” zastąpione przez „otrzymał”, dodano tajne szyfrowanie, odpowiednio zweryfikowane „najlepsze praktyki w zakresie rozwoju i kodowania”",
+        "zh-cn": "“请求”替换为“得到”，添加了秘密加密，相应地审查了“开发和编码最佳实践”"
+      },
+      "0.0.1": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "zh-cn": "首次出版"
       }
-    ]
-  }
+    },
+    "title": "CLEVERON",
+    "titleLang": {
+      "en": "CLEVERON",
+      "de": "CLEVERON",
+      "ru": "КЛЕВЕРОН",
+      "pt": "CLEVERON",
+      "nl": "CLEVERON",
+      "fr": "CLEVERON",
+      "it": "CLEVERON",
+      "es": "CLEVERON",
+      "pl": "CLEVERON",
+      "zh-cn": "克莱弗龙"
+    },
+    "desc": {
+      "en": "get your data by the CLEVERON - API",
+      "de": "Hol dir deine Daten über die CLEVERON - API",
+      "ru": "получите ваши данные с помощью CLEVERON - API",
+      "pt": "obtenha seus dados pelo CLEVERON - API",
+      "nl": "haal uw gegevens op via de CLEVERON - API",
+      "fr": "récupérer vos données par le CLEVERON - API",
+      "it": "ottieni i tuoi dati da CLEVERON - API",
+      "es": "obtenga sus datos mediante CLEVERON - API",
+      "pl": "zdobądź swoje dane przez CLEVERON - API",
+      "zh-cn": "通过 CLEVERON - API 获取您的数据"
+    },
+    "authors": [
+      "forelleblau <marceladam@gmx.ch>"
+    ],
+    "keywords": [
+      "Cleveron",
+      "Heizung",
+      "CO2",
+      "Luftqualitaet"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "main": "main.js",
+    "icon": "cleveron.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.cleveron/main/admin/cleveron.png",
+    "readme": "https://github.com/iobroker-community-adapters/ioBroker.cleveron/blob/main/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "climate-control",
+    "compact": true,
+    "connectionType": "cloud",
+    "dataSource": "poll",
+    "materialize": true,
+    "dependencies": [{
+      "js-controller": ">=3.1.0"
+    }]
+  },
+  "encryptedNative": [
+    "userpw"
+  ],
+
+  "native": {
+    "user": "",
+    "userpw": "",
+    "poll": 10
+  },
+
+  "objects": [],
+  "instanceObjects": [{
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
+}
