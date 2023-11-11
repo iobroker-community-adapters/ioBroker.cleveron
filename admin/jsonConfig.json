@@ -2,11 +2,12 @@
   "type": "tabs",
   "i18n": true,
   "items": {
-    "portconnection": {
+    "connection": {
       "type": "panel",
-      "label": "connection",
+      "label": "cleveron adapter settings",
       "items": {
         "_text1": {
+          "newLine": true,
           "type": "staticText",
           "text": "login"
         },
@@ -22,8 +23,8 @@
           "type": "password",
           "visible": false,
           "sm": 12,
-          "md": 8,
-          "lg": 8,
+          "md": 6,
+          "lg": 6,
           "label": "userpw"
         },
         "_text2": {
