@@ -4,16 +4,17 @@
     "version": "0.0.6",
     "news": {
       "0.0.6": {
-        "en": "dependencies updated",
-        "de": "aktualisierte dependencies",
-        "ru": "зависимости обновлены",
-        "pt": "dependências atualizadas",
-        "nl": "afhankelijkheid geüpdateerd",
-        "fr": "dépendances mises à jour",
-        "it": "dipendenze aggiornate",
-        "es": "dependencias actualizadas",
-        "pl": "aktualizacja",
-        "zh-cn": "b. 更新的依赖"
+        "en": "jsonConfig",
+        "de": "das ist der Grund",
+        "ru": "jsonКонфиг",
+        "pt": "o que foi",
+        "nl": "jsonConfig",
+        "fr": "jsonConfig",
+        "it": "jsonConfig",
+        "es": "jsonConfig",
+        "pl": "jsonConfig",
+        "uk": "український",
+        "zh-cn": "json Config"
       },
       "0.0.5": {
         "en": "introduced axios",
@@ -25,6 +26,7 @@
         "it": "assio introdotto",
         "es": "introdujo axios",
         "pl": "wprowadzony aksjos",
+        "uk": "introduced axios",
         "zh-cn": "介绍了axios"
       },
       "0.0.4": {
@@ -37,6 +39,7 @@
         "it": "crittografia modificata in 'encryptedNative'",
         "es": "cambió el cifrado a 'encryptedNative'",
         "pl": "zmieniono szyfrowanie na „encryptedNative”",
+        "uk": "changed ecrypting to 'encryptedNative'",
         "zh-cn": "将加密更改为 'encryptedNative'"
       },
       "0.0.3": {
@@ -49,6 +52,7 @@
         "it": "aggiunte cartelle, dispositivi, canali e bug corretti",
         "es": "carpetas, dispositivos, canales y errores corregidos agregados",
         "pl": "dodane foldery, urządzenia, kanały i naprawione błędy",
+        "uk": "added folders, devices, channels & fixed bugs",
         "zh-cn": "添加了文件夹、设备、频道和修复的错误"
       },
       "0.0.2": {
@@ -61,6 +65,7 @@
         "it": "\"richiesta\" sostituito da \"ottenuto\", aggiunta di crittografia segreta, esaminata di conseguenza \"migliori pratiche di sviluppo e codifica\"",
         "es": "'solicitud' reemplazada por 'obtenido', cifrado secreto agregado, revisado en consecuencia 'mejores prácticas de desarrollo y codificación'",
         "pl": "„żądanie” zastąpione przez „otrzymał”, dodano tajne szyfrowanie, odpowiednio zweryfikowane „najlepsze praktyki w zakresie rozwoju i kodowania”",
+        "uk": "'request' replaced by 'got', secret encryption added, reviewed accordingly 'development and coding best practices'",
         "zh-cn": "“请求”替换为“得到”，添加了秘密加密，相应地审查了“开发和编码最佳实践”"
       },
       "0.0.1": {
@@ -73,10 +78,11 @@
         "it": "Versione iniziale",
         "es": "Versión inicial",
         "pl": "Pierwsze wydanie",
+        "uk": "initial release",
         "zh-cn": "首次出版"
       }
     },
-    "title": "CLEVERON",
+
     "titleLang": {
       "en": "CLEVERON",
       "de": "CLEVERON",
@@ -87,6 +93,7 @@
       "it": "CLEVERON",
       "es": "CLEVERON",
       "pl": "CLEVERON",
+      "uk": "CLEVERON"
       "zh-cn": "克莱弗龙"
     },
     "desc": {
@@ -99,6 +106,7 @@
       "it": "ottieni i tuoi dati da CLEVERON - API",
       "es": "obtenga sus datos mediante CLEVERON - API",
       "pl": "zdobądź swoje dane przez CLEVERON - API",
+      "uk": "отримати ваші дані за допомогою CLEVERON - API"
       "zh-cn": "通过 CLEVERON - API 获取您的数据"
     },
     "authors": [
