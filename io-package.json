@@ -124,6 +124,10 @@
     "connectionType": "cloud",
     "dataSource": "poll",
     "materialize": true,
+    "jsonConfig": true,
+    "adminUI": {
+      "config": "json"
+    },
     "dependencies": [{
       "js-controller": ">=3.1.0"
     }]
