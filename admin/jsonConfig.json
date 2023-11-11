@@ -20,7 +20,6 @@
         },
         "userpw": {
           "type": "password",
-          "repeat": true,
           "visible": false,
           "sm": 12,
           "md": 8,

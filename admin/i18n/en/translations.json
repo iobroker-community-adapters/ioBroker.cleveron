@@ -1,0 +1,7 @@
+{
+"user": "user",
+"userpw": "password",
+"login": "Just fill in you cleveron login data",
+"poll": "polling interval (minutes)",
+"polling": "enter polling interval"
+}

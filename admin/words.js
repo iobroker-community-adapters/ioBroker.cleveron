@@ -2,7 +2,7 @@
 'use strict';
 
 systemDictionary = {
-  'cleveron adapter settings': {
+  "cleveron adapter settings": {
     'en': 'Adapter settings for cleveron',
     'de': 'Adaptereinstellungen für cleveron',
     'ru': 'Настройки адаптера для cleveron',
@@ -14,7 +14,7 @@ systemDictionary = {
     'pl': 'Ustawienia adaptera dla cleveron',
     'zh-cn': 'cleveron的适配器设置'
   },
-  'user': {
+  "user": {
     "en": "user",
     "de": "Benutzer",
     "ru": "Пользователь",
@@ -26,7 +26,7 @@ systemDictionary = {
     "pl": "użytkownik",
     "zh-cn": "用户"
   },
-  'userpw': {
+  "userpw": {
     "en": "password",
     "de": "Passwort",
     "ru": "пароль",
@@ -38,7 +38,7 @@ systemDictionary = {
     "pl": "hasło",
     "zh-cn": "密码"
   },
-  'login': {
+  "login": {
     "en": "Just fill in you cleveron login data",
     "de": "Geben Sie einfach Ihre cleveron-Login-Daten ein",
     "ru": "Просто введите данные для входа в cleveron",
@@ -50,7 +50,7 @@ systemDictionary = {
     "pl": "Wystarczy wpisać sprytne dane logowania",
     "zh-cn": "只需填写您的cleveron登录数据"
   },
-  'poll': {
+  "poll": {
     "en": "polling interval (minutes)",
     "de": "Abfrageintervall (Minuten)",
     "ru": "интервал опроса (минуты)",
