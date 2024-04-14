@@ -82,7 +82,6 @@
         "zh-cn": "首次出版"
       }
     },
-
     "titleLang": {
       "en": "CLEVERON",
       "de": "CLEVERON",
@@ -118,14 +117,17 @@
       "CO2",
       "Luftqualitaet"
     ],
-    "license": "MIT",
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
     "platform": "Javascript/Node.js",
-    "main": "main.js",
     "icon": "cleveron.png",
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.cleveron/main/admin/cleveron.png",
     "readme": "https://github.com/iobroker-community-adapters/ioBroker.cleveron/blob/main/README.md",
     "loglevel": "info",
+    "tier": 2,
     "mode": "daemon",
     "type": "climate-control",
     "compact": true,
@@ -137,19 +139,22 @@
       "config": "json"
     },
     "dependencies": [{
-      "js-controller": ">=3.1.0"
-    }]
+      "js-controller": ">=5.0.0"
+    }],
+    "globalDependencies": [
+      {
+        "admin": ">=5.1.13"
+      }
+    ]
   },
   "encryptedNative": [
     "userpw"
   ],
-
   "native": {
     "user": "",
     "userpw": "",
     "poll": 10
   },
-
   "objects": [],
   "instanceObjects": [{
       "_id": "info",
